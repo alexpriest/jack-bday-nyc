@@ -863,8 +863,55 @@
 
   <section class="pool-section">
     <p class="section-label">Swap pool</p>
-    <h2 style="margin-bottom:8px;">Candidates</h2>
-    <p style="font-size:13px;margin-bottom:12px;">Alternative activities not currently in the plan. Drag any of these into a day on the calendar, or click "+ Add" on any table row below to promote it here.</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+      <h2 style="margin:0;">Candidates</h2>
+      <button class="btn" id="newActivityBtn">+ Custom activity</button>
+    </div>
+    <p style="font-size:13px;margin-bottom:12px;">Alternative activities not currently in the plan. Drag any of these into a day on the calendar, or click "+ Add" on any table row below to promote it here. Use "+ Custom" to add something I haven't pre-defined.</p>
+
+    <div id="newActivityForm" style="display:none;margin-bottom:12px;padding:12px;background:var(--paper);border:1px solid var(--border);border-radius:4px;">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;align-items:end;">
+        <div>
+          <label class="day-notes-label">Title</label>
+          <input type="text" id="naTitle" placeholder="Dinner at Frenchette" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:3px;font-family:Georgia,serif;font-size:13px;">
+        </div>
+        <div>
+          <label class="day-notes-label">Type</label>
+          <select id="naKind" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:3px;font-family:Georgia,serif;font-size:13px;">
+            <option value="meal">Meal</option>
+            <option value="spa">Spa</option>
+            <option value="show">Show</option>
+            <option value="drinks">Drinks</option>
+            <option value="activity">Activity</option>
+            <option value="kids">Kids</option>
+          </select>
+        </div>
+        <div>
+          <label class="day-notes-label">Start</label>
+          <input type="time" id="naStart" value="18:00" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:3px;font-family:Georgia,serif;font-size:13px;">
+        </div>
+        <div>
+          <label class="day-notes-label">Duration (min)</label>
+          <input type="number" id="naDuration" value="90" min="15" step="15" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:3px;font-family:Georgia,serif;font-size:13px;">
+        </div>
+      </div>
+      <div style="margin-top:8px;">
+        <label class="day-notes-label">Detail (optional)</label>
+        <input type="text" id="naDetail" placeholder="Address, who's going, why…" style="width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:3px;font-family:Georgia,serif;font-size:13px;">
+      </div>
+      <div style="margin-top:8px;display:flex;gap:12px;flex-wrap:wrap;font-size:12px;align-items:center;">
+        <span style="color:var(--text-light);font-family:'Helvetica Neue',sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;">Tags:</span>
+        <label><input type="checkbox" id="naTagAdults"> Adults</label>
+        <label><input type="checkbox" id="naTagKids"> Kid-OK</label>
+        <label><input type="checkbox" id="naTagCity"> NYC</label>
+        <label><input type="checkbox" id="naTagWest"> Westchester</label>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;">
+        <button class="btn" id="naSave" style="background:var(--accent);color:white;border-color:var(--accent);">Add to candidates</button>
+        <button class="btn" id="naCancel">Cancel</button>
+      </div>
+    </div>
+
     <div class="day-column pool-column" style="min-height:auto;">
       <div class="activity-list" id="day-pool" data-day="pool"></div>
     </div>
@@ -1836,12 +1883,14 @@ function clearOverride(day, id) {
 function getStart(day, id) {
   const ov = getOverride(day, id);
   if (ov && ov.start) return ov.start;
-  return ACTIVITIES[id]?.defaultStart || '12:00';
+  const a = getActivity(id);
+  return a?.defaultStart || '12:00';
 }
 function getDuration(day, id) {
   const ov = getOverride(day, id);
   if (ov && ov.duration) return ov.duration;
-  return ACTIVITIES[id]?.duration || 60;
+  const a = getActivity(id);
+  return a?.duration || 60;
 }
 
 /* ============================================================
@@ -1919,7 +1968,7 @@ function renderEventsForDay(dayId) {
 
   // Build event list with timing
   const events = items.map(id => {
-    const a = ACTIVITIES[id];
+    const a = getActivity(id);
     if (!a) return null;
     const start = getStart(dayId, id);
     const duration = getDuration(dayId, id);
@@ -2019,8 +2068,14 @@ function renderListView() {
   grid.innerHTML = html;
 }
 
+function getActivity(id) {
+  if (ACTIVITIES[id]) return ACTIVITIES[id];
+  if (plan._customs && plan._customs[id]) return plan._customs[id];
+  return null;
+}
+
 function renderCard(id) {
-  const a = ACTIVITIES[id];
+  const a = getActivity(id);
   if (!a) return '';
   const tagsHtml = (a.tags || []).map(t => {
     const label = {adults:'Adults',kids:'Kid-OK',city:'NYC',west:'Westchester'}[t] || t;
@@ -2259,21 +2314,81 @@ document.getElementById('dayFilter').addEventListener('click', e => {
 document.querySelectorAll('.row-add-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const targetId = btn.dataset.target;
-    if (!targetId || !ACTIVITIES[targetId]) {
+    const a = getActivity(targetId);
+    if (!targetId || !a) {
       toast(`No activity defined for ${targetId}`);
       return;
     }
     if (isInPlan(targetId)) {
       removeFromAnywhere(targetId);
-      toast(`Removed ${ACTIVITIES[targetId].title}`);
+      toast(`Removed ${a.title}`);
     } else {
       if (!plan.pool.includes(targetId)) plan.pool.push(targetId);
-      toast(`Added ${ACTIVITIES[targetId].title} to Candidates`);
+      toast(`Added ${a.title} to Candidates`);
     }
     saveAndPush();
     render();
   });
 });
+
+/* ============================================================
+   CUSTOM ACTIVITY CREATION
+   ============================================================ */
+const newActivityBtn = document.getElementById('newActivityBtn');
+const newActivityForm = document.getElementById('newActivityForm');
+newActivityBtn.addEventListener('click', () => {
+  newActivityForm.style.display = newActivityForm.style.display === 'none' ? 'block' : 'none';
+  if (newActivityForm.style.display === 'block') {
+    document.getElementById('naTitle').focus();
+  }
+});
+document.getElementById('naCancel').addEventListener('click', () => {
+  newActivityForm.style.display = 'none';
+  resetCustomForm();
+});
+document.getElementById('naSave').addEventListener('click', () => {
+  const title = document.getElementById('naTitle').value.trim();
+  if (!title) {
+    toast('Title required');
+    return;
+  }
+  const kind = document.getElementById('naKind').value;
+  const start = document.getElementById('naStart').value || '18:00';
+  const duration = parseInt(document.getElementById('naDuration').value) || 90;
+  const detail = document.getElementById('naDetail').value.trim();
+  const tags = [];
+  if (document.getElementById('naTagAdults').checked) tags.push('adults');
+  if (document.getElementById('naTagKids').checked) tags.push('kids');
+  if (document.getElementById('naTagCity').checked) tags.push('city');
+  if (document.getElementById('naTagWest').checked) tags.push('west');
+
+  const id = 'custom-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6);
+  if (!plan._customs) plan._customs = {};
+  plan._customs[id] = {
+    title, kind, detail,
+    defaultStart: start,
+    duration,
+    tags,
+    custom: true
+  };
+  if (!plan.pool) plan.pool = [];
+  plan.pool.push(id);
+  saveAndPush();
+  render();
+  toast(`Added "${title}" to Candidates`);
+  newActivityForm.style.display = 'none';
+  resetCustomForm();
+});
+function resetCustomForm() {
+  document.getElementById('naTitle').value = '';
+  document.getElementById('naKind').value = 'meal';
+  document.getElementById('naStart').value = '18:00';
+  document.getElementById('naDuration').value = '90';
+  document.getElementById('naDetail').value = '';
+  ['naTagAdults','naTagKids','naTagCity','naTagWest'].forEach(id => {
+    document.getElementById(id).checked = false;
+  });
+}
 
 function isInPlan(id) {
   for (const day of [...DAYS.map(d=>d.id), 'pool']) {
