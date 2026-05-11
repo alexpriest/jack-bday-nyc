@@ -395,31 +395,36 @@
     line-height: 1.3;
   }
 
-  /* Time gutter */
-  .cal-hour-label {
-    border-bottom: 1px solid var(--border);
+  /* Hour labels column */
+  .cal-hours {
     border-right: 1px solid var(--border);
-    padding: 2px 6px;
+    position: relative;
+  }
+  .cal-hour-label {
+    padding: 2px 6px 0 0;
     font-family: 'Helvetica Neue', sans-serif;
     font-size: 9px;
     color: var(--text-light);
     text-align: right;
     height: 60px;
+    box-sizing: border-box;
+    line-height: 1;
   }
 
-  /* Day column body */
+  /* Day column body — one tall column per day with gridline backgrounds */
   .cal-day-col {
     border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
     position: relative;
-    min-height: 60px;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 59px,
+        var(--border) 59px,
+        var(--border) 60px
+      );
   }
   .cal-day-col:last-child { border-right: none; }
-  /* Half-hour grid lines via gradient */
-  .cal-day-col.hour-cell {
-    background:
-      linear-gradient(to bottom, transparent 29px, var(--border) 29px, var(--border) 30px, transparent 30px);
-  }
 
   /* Event blocks (absolute positioned in column) */
   .cal-event {
@@ -792,8 +797,10 @@
       <span><span class="legend-swatch" style="background:var(--c-drinks-bg);border-color:var(--c-drinks);"></span>Drinks</span>
       <span><span class="legend-swatch" style="background:var(--c-activity-bg);border-color:var(--c-activity);"></span>Activity</span>
       <span><span class="legend-swatch" style="background:var(--c-kids-bg);border-color:var(--c-kids);"></span>Kid-friendly</span>
-      <span><span class="legend-swatch" style="background:var(--travel);border-color:var(--c-travel-color);"></span>Travel</span>
     </div>
+    <p style="font-size:11px;color:var(--text-light);margin:8px 0 12px;font-style:italic;">
+      Calendar: drag events between days, or up/down within a day, to retime (snaps to 15 min). Use +/− on hover to nudge by 15 min, × to send to candidates. To pull items from the candidates pool into a specific day, switch to List view first.
+    </p>
 
     <!-- CALENDAR VIEW -->
     <div id="calendarView" class="calendar-wrap">
@@ -1242,6 +1249,33 @@ const ACTIVITIES = {
     detail: 'Guided sauna + cold plunge class. ~$60–75/pp.',
     defaultStart: '11:00',
     duration: 75,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'guerlain': {
+    kind: 'spa',
+    title: 'Guerlain Wellness (Waldorf)',
+    detail: 'Treatment rooms — Duckbill pick. Hotel-luxury, formal. $320–500/pp.',
+    defaultStart: '14:00',
+    duration: 120,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'zz': {
+    kind: 'spa',
+    title: 'ZZ Day Spa',
+    detail: 'Spa party packages — Duckbill pick. Bachelorette-energy.',
+    defaultStart: '14:00',
+    duration: 120,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'nuansa': {
+    kind: 'spa',
+    title: 'Nuansa Spa',
+    detail: 'Indonesian-style treatment rooms — Duckbill pick.',
+    defaultStart: '14:00',
+    duration: 120,
     travelFromWP: 75,
     tags: ['adults','city']
   },
@@ -1790,13 +1824,11 @@ function renderCalendar() {
   const grid = document.getElementById('calendarGrid');
   const days = DAYS.filter(d => visibleDays.includes(d.id));
   grid.style.setProperty('--day-count', days.length);
-  const hours = [];
-  for (let h = CAL_START_HOUR; h < CAL_END_HOUR; h++) hours.push(h);
+  const totalHours = CAL_END_HOUR - CAL_START_HOUR;
+  const bodyHeight = totalHours * 60;
 
-  let html = '';
-  // Top-left corner
-  html += '<div class="cal-corner"></div>';
-  // Day headers
+  let html = '<div class="cal-corner"></div>';
+  // Day headers (row 1)
   for (const d of days) {
     const tagClass = d.tag === 'adults' ? 'adults' : (d.tag === 'mixed' ? 'mixed' : 'family');
     const noteHtml = d.note ? `<div class="day-note-head">${d.note}</div>` : '';
@@ -1809,74 +1841,90 @@ function renderCalendar() {
       </div>
     `;
   }
-  // Hour rows
-  for (const h of hours) {
+  // Body row: hour labels column + day columns (each one tall single element)
+  html += `<div class="cal-hours" style="height:${bodyHeight}px;">`;
+  for (let h = CAL_START_HOUR; h < CAL_END_HOUR; h++) {
     const period = h >= 12 ? 'pm' : 'am';
     const h12 = h % 12 || 12;
     html += `<div class="cal-hour-label">${h12}${period}</div>`;
-    for (const d of days) {
-      html += `<div class="cal-day-col hour-cell" data-day="${d.id}" data-hour="${h}"></div>`;
-    }
   }
-
+  html += '</div>';
+  for (const d of days) {
+    html += `<div class="cal-day-col" data-day="${d.id}" style="height:${bodyHeight}px;"></div>`;
+  }
   grid.innerHTML = html;
 
-  // After grid is laid out, render events as absolute-positioned blocks per day col
-  for (const d of days) {
-    renderEventsForDay(d.id);
-  }
+  // Render events
+  for (const d of days) renderEventsForDay(d.id);
 }
 
 function renderEventsForDay(dayId) {
+  const col = document.querySelector(`.cal-day-col[data-day="${dayId}"]`);
+  if (!col) return;
   const items = plan[dayId] || [];
-  // Get the column hour cells for this day
-  const cells = document.querySelectorAll(`.cal-day-col[data-day="${dayId}"]`);
-  if (!cells.length) return;
 
-  // Make the first cell the positioning container for events
-  // Collapse the column visually: events span across cells by using absolute pos w/ top offset
-  // Simplest: append event blocks to the first hour cell with relative positioning and use top offsets
-  // Actually we'll create event blocks inside a "day stack" we inject after the first cell
-
-  // For each event in items, compute top + height
-  items.forEach((id) => {
+  // Build event list with timing
+  const events = items.map(id => {
     const a = ACTIVITIES[id];
-    if (!a) return;
+    if (!a) return null;
     const start = getStart(dayId, id);
     const duration = getDuration(dayId, id);
-    const startMin = timeToMinutes(start);
-    const calStartMin = CAL_START_HOUR * 60;
-    const top = (startMin - calStartMin) * PX_PER_MIN;
-    const height = Math.max(duration * PX_PER_MIN, 24);
+    return {
+      id, a, start, duration,
+      startMin: timeToMinutes(start),
+      endMin: timeToMinutes(start) + duration
+    };
+  }).filter(Boolean);
 
-    if (top < 0 || top > (CAL_END_HOUR - CAL_START_HOUR) * 60) return;
+  // Sort by start, then assign columns to handle overlap
+  events.sort((x, y) => x.startMin - y.startMin || y.duration - x.duration);
+  const lanes = []; // each lane = array of events whose endMin is in ascending order
+  events.forEach(ev => {
+    let placed = false;
+    for (let i = 0; i < lanes.length; i++) {
+      const last = lanes[i][lanes[i].length - 1];
+      if (last.endMin <= ev.startMin) {
+        lanes[i].push(ev);
+        ev.lane = i;
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      ev.lane = lanes.length;
+      lanes.push([ev]);
+    }
+  });
+  const numLanes = Math.max(1, lanes.length);
 
-    // Find which hour cell this start is in
-    const startHour = Math.floor(startMin / 60);
-    const cellEl = document.querySelector(`.cal-day-col[data-day="${dayId}"][data-hour="${startHour}"]`);
-    if (!cellEl) return;
-    const minuteOffset = startMin - startHour * 60;
+  const calStartMin = CAL_START_HOUR * 60;
+  const maxTop = (CAL_END_HOUR - CAL_START_HOUR) * 60;
 
-    const evHtml = `
+  let html = '';
+  for (const ev of events) {
+    const a = ev.a;
+    const top = (ev.startMin - calStartMin) * PX_PER_MIN;
+    const height = Math.max(ev.duration * PX_PER_MIN, 22);
+    if (top < 0 || top > maxTop) continue;
+    const widthPct = 100 / numLanes;
+    const leftPct = ev.lane * widthPct;
+
+    html += `
       <div class="cal-event kind-${a.kind || 'activity'} ${a.locked ? 'locked' : ''}"
-           data-activity-id="${id}" data-day="${dayId}"
-           style="top:${minuteOffset}px;height:${height}px;">
-        <div class="ev-time">${formatTime(start)} — ${formatTime(endTime(start, duration))}</div>
+           data-activity-id="${ev.id}" data-day="${dayId}"
+           style="top:${top}px;height:${height}px;left:calc(${leftPct}% + 2px);width:calc(${widthPct}% - 4px);">
+        <div class="ev-time">${formatTime(ev.start)} — ${formatTime(endTime(ev.start, ev.duration))}</div>
         <div class="ev-title">${a.title}</div>
-        ${height > 48 ? `<div class="ev-detail">${a.detail || ''}</div>` : ''}
+        ${height > 48 ? `<div class="ev-detail">${(a.detail || '').slice(0, 100)}</div>` : ''}
         ${!a.locked ? `<div class="ev-actions">
           <button class="ev-action" data-action="back15" title="−15 min">−</button>
           <button class="ev-action" data-action="fwd15" title="+15 min">+</button>
-          <button class="ev-action" data-action="remove" title="Remove">×</button>
+          <button class="ev-action" data-action="remove" title="Send to candidates">×</button>
         </div>` : ''}
       </div>
     `;
-    cellEl.insertAdjacentHTML('beforeend', evHtml);
-  });
-
-  // Render travel block before each adults/city event going from WP
-  // (lightweight — only show travel block if previous event was kids/west or first event of day)
-  // Skipping for now to keep MVP clean — can add as future polish.
+  }
+  col.innerHTML = html;
 }
 
 /* ============================================================
@@ -1999,11 +2047,18 @@ function initInteractions() {
       e.preventDefault();
       try {
         const data = JSON.parse(e.dataTransfer.getData('text/plain'));
-        const toDay = col.dataset.day;
-        const toHour = parseInt(col.dataset.hour);
         if (!data.id) return;
-        moveActivity(data.fromDay, toDay, data.id, toHour);
-      } catch (err) {}
+        const toDay = col.dataset.day;
+        // Compute drop time from pointer Y position (snap to 15-min)
+        const rect = col.getBoundingClientRect();
+        const y = Math.max(0, e.clientY - rect.top);
+        const totalMins = CAL_START_HOUR * 60 + Math.round(y / PX_PER_MIN);
+        const snapped = Math.max(0, Math.min(Math.round(totalMins / 15) * 15, 23 * 60 + 45));
+        const hh = Math.floor(snapped / 60);
+        const mm = snapped % 60;
+        const newStart = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+        moveActivityToTime(data.fromDay, toDay, data.id, newStart);
+      } catch (err) { console.warn(err); }
     });
   });
 
@@ -2049,15 +2104,25 @@ function shiftEvent(day, id, deltaMin) {
   render();
 }
 function moveActivity(fromDay, toDay, id, dropHour) {
+  // Legacy hour-based move (kept for compatibility)
   if (fromDay !== toDay) {
     plan[fromDay] = (plan[fromDay] || []).filter(x => x !== id);
     if (!plan[toDay]) plan[toDay] = [];
     if (!plan[toDay].includes(id)) plan[toDay].push(id);
   }
-  // Update start to dropped hour (works for same-day time shift too)
   if (typeof dropHour === 'number') {
     setOverride(toDay, id, { ...(getOverride(toDay, id) || {}), start: `${String(dropHour).padStart(2,'0')}:00` });
   }
+  saveAndPush();
+  render();
+}
+function moveActivityToTime(fromDay, toDay, id, startTime) {
+  if (fromDay !== toDay) {
+    plan[fromDay] = (plan[fromDay] || []).filter(x => x !== id);
+    if (!plan[toDay]) plan[toDay] = [];
+    if (!plan[toDay].includes(id)) plan[toDay].push(id);
+  }
+  setOverride(toDay, id, { ...(getOverride(toDay, id) || {}), start: startTime });
   saveAndPush();
   render();
 }
