@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jackhattan — June 5–11, 2026</title>
+<meta name="description" content="Jackhattan — Jack's birthday week in NYC + Westchester. 7 adults, June 5–11, 2026.">
+<meta property="og:title" content="Jackhattan — June 5–11, 2026">
+<meta property="og:description" content="Jack's birthday week in NYC + Westchester. Drag-to-rearrange agenda, comparison tables for restaurants/bars/spas, hour-by-hour calendar.">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    --bg: #FFFCF0;
+    --paper: #FAF7EC;
+    --text: #6F6E69;
+    --heading: #100F0F;
+    --accent: #BC5215;
+    --accent-soft: #E8D4C0;
+    --border: #E6E4D9;
+    --border-strong: #B7B5AC;
+    --card-bg: #ffffff;
+    --locked-bg: #F5F1E5;
+    --pool-bg: #FAF6E8;
+    --duckbill: #FFF4D9;
+    --kit-pick: #EDF3DA;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+    padding: 32px 24px 80px;
+  }
+
+  .container {
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  h1, h2, h3, h4 {
+    color: var(--heading);
+    font-family: Georgia, serif;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  h1 { font-size: 36px; letter-spacing: -0.015em; margin-bottom: 8px; }
+  h2 { font-size: 24px; margin-top: 0; }
+  h3 { font-size: 17px; margin-bottom: 12px; }
+
+  p { margin: 0 0 12px; }
+
+  .section-label {
+    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text);
+    margin: 0 0 6px;
+  }
+
+  a { color: var(--accent); }
+
+  .lede {
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+
+  /* Top meta strip */
+  .meta-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 24px 0 32px;
+    padding: 16px;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  .meta-strip > div strong {
+    color: var(--heading);
+    font-weight: normal;
+    display: block;
+    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  hr.rule {
+    border: none;
+    border-top: 1px solid var(--border-strong);
+    margin: 48px 0 32px;
+  }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  button.btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border-strong);
+    color: var(--heading);
+    padding: 6px 14px;
+    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  button.btn:hover { background: var(--bg); }
+
+  /* Week grid */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr) 280px;
+    gap: 10px;
+    margin: 16px 0 24px;
+  }
+
+  .day-column, .pool-column {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pool-column {
+    background: var(--pool-bg);
+    border: 1px dashed var(--border-strong);
+  }
+
+  .day-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+  }
+
+  .day-name {
+    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text);
+  }
+
+  .day-date {
+    font-family: Georgia, serif;
+    font-size: 17px;
+    color: var(--heading);
+    line-height: 1.2;
+    margin-top: 2px;
+  }
+
+  .day-note {
+    font-size: 11px;
+    color: var(--accent);
+    margin-top: 3px;
+    font-style: italic;
+  }
+
+  .activity-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 100px;
+  }
+
+  /* Activity cards */
+  .activity-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border-strong);
+    border-radius: 3px;
+    padding: 7px 9px;
+    font-size: 12px;
+    cursor: grab;
+    transition: box-shadow 0.12s, transform 0.12s, border-color 0.12s;
+    user-select: none;
+  }
+
+  .activity-card:hover {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border-left-color: var(--accent);
+  }
+
+  .activity-card.dragging {
+    opacity: 0.4;
+  }
+
+  .activity-card.locked {
+    background: var(--locked-bg);
+    border-left-color: var(--accent);
+    cursor: not-allowed;
+  }
+  .activity-card.locked:hover {
+    box-shadow: none;
+  }
+
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    align-items: center;
+    margin-bottom: 3px;
+  }
+
+  .card-time {
+    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    margin-right: 4px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
+    font-size: 8.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1px 5px;
+    border-radius: 2px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    line-height: 1.4;
+  }
+  .tag.adults { background: #F1E2CC; color: #7A4516; border-color: #E0CDB0; }
+  .tag.kids { background: #E2EDD0; color: #4A6B1F; border-color: #C9DCAE; }
+  .tag.city { background: #DCE6F0; color: #2A4870; border-color: #BFD0E2; }
+  .tag.west { background: #EBD9D4; color: #6B3030; border-color: #DEC5BE; }
+  .tag.locked-tag { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft); }
+
+  .card-title {
+    color: var(--heading);
+    font-family: Georgia, serif;
+    font-size: 13px;
+    line-height: 1.3;
+    margin-top: 2px;
+  }
+
+  .card-detail {
+    font-size: 11px;
+    color: var(--text);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .card-booking {
+    font-size: 10px;
+    color: var(--accent);
+    margin-top: 4px;
+    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* Tables */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 12px 0 24px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--card-bg);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  th {
+    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    font-weight: 400;
+    border-bottom: 1px solid var(--border-strong);
+    background: var(--paper);
+    white-space: nowrap;
+  }
+
+  td .name {
+    color: var(--heading);
+    font-weight: 400;
+  }
+
+  td .sub {
+    font-size: 11px;
+    color: var(--text);
+    font-style: italic;
+  }
+
+  tr.duckbill td { background: var(--duckbill); }
+  tr.kit-top td { background: var(--kit-pick); }
+  tr.skip td { opacity: 0.55; }
+
+  .verdict {
+    font-style: italic;
+    color: var(--accent);
+    font-size: 12px;
+  }
+
+  .verdict.neutral { color: var(--text); font-style: normal; }
+  .verdict.skip { color: var(--text); text-decoration: line-through; font-style: normal; opacity: 0.7; }
+
+  .stars {
+    color: var(--accent);
+    font-size: 12px;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 16px;
+    font-size: 11px;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .legend-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    margin-right: 4px;
+    vertical-align: -1px;
+    border: 1px solid var(--border);
+  }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  @media (max-width: 1200px) {
+    .week-grid { grid-template-columns: repeat(4, 1fr); }
+    .meta-strip { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 700px) {
+    .week-grid { grid-template-columns: 1fr; }
+    .meta-strip { grid-template-columns: 1fr; }
+    body { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <p class="section-label">June 5–11, 2026 · 7 adults + kids · White Plains lodging</p>
+    <h1>Jackhattan</h1>
+    <p class="lede">Jack's birthday week — drag activities between days, swap candidates from the comparison tables below, and play with the shape of the week. Locked items (Vanguard show, arrival night) are fixed.</p>
+
+    <div class="meta-strip">
+      <div>
+        <strong>Locked anchor</strong>
+        Sun 6/7 · 8pm<br>Kurt Rosenwinkel Quintet @ Village Vanguard (7 tix, Miranda has them, GA seating — arrive 7:30 for good seats)
+      </div>
+      <div>
+        <strong>To book ASAP</strong>
+        Blue Hill at Stone Barns (Wed 6/10 or Thu 6/11 lunch — both open weekdays, Mon-Tue they're closed)<br>Bathhouse Flatiron (Sun 6/7 mid-day)
+      </div>
+      <div>
+        <strong>Dietary</strong>
+        Miranda, AJ, Ash gluten-free (3 of 7).<br>Restaurants picked accommodate this cleanly.
+      </div>
+      <div>
+        <strong>Geography</strong>
+        White Plains → Stone Barns = 15 min drive.<br>White Plains → Manhattan = ~1 hr (Metro-North or car).
+      </div>
+    </div>
+  </header>
+
+  <hr class="rule">
+
+  <section>
+    <p class="section-label">Plan</p>
+    <div class="toolbar">
+      <h2>The week — drag to rearrange</h2>
+      <button class="btn" onclick="resetPlan()">Reset to default</button>
+    </div>
+    <p style="font-size: 13px;">Each day below has a stack of activity cards. Drag any non-locked card to a different day, or into the "Candidates" pool on the right. The pool holds alternative activities you can swap in. Your changes save automatically — refresh and they'll still be there. Reset to start over.</p>
+
+    <div class="legend">
+      <span><span class="legend-swatch" style="background:#F1E2CC;border-color:#E0CDB0;"></span>Adults</span>
+      <span><span class="legend-swatch" style="background:#E2EDD0;border-color:#C9DCAE;"></span>Kid-friendly</span>
+      <span><span class="legend-swatch" style="background:#DCE6F0;border-color:#BFD0E2;"></span>NYC</span>
+      <span><span class="legend-swatch" style="background:#EBD9D4;border-color:#DEC5BE;"></span>Westchester</span>
+      <span><span class="legend-swatch" style="background:#F5F1E5;border-color:#B7B5AC;"></span>Locked</span>
+    </div>
+
+    <div class="week-grid" id="weekGrid">
+
+      <!-- FRIDAY 6/5 -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Friday</div>
+          <div class="day-date">June 5</div>
+          <div class="day-note">Arrival — keep clear</div>
+        </div>
+        <div class="activity-list" id="day-fri" data-day="fri"></div>
+      </div>
+
+      <!-- SATURDAY 6/6 -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Saturday</div>
+          <div class="day-date">June 6</div>
+        </div>
+        <div class="activity-list" id="day-sat" data-day="sat"></div>
+      </div>
+
+      <!-- SUNDAY 6/7 -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Sunday</div>
+          <div class="day-date">June 7</div>
+          <div class="day-note">Vanguard 8pm</div>
+        </div>
+        <div class="activity-list" id="day-sun" data-day="sun"></div>
+      </div>
+
+      <!-- MONDAY 6/8 -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Monday</div>
+          <div class="day-date">June 8</div>
+          <div class="day-note">Stone Barns closed</div>
+        </div>
+        <div class="activity-list" id="day-mon" data-day="mon"></div>
+      </div>
+
+      <!-- TUESDAY 6/9 -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Tuesday</div>
+          <div class="day-date">June 9</div>
+          <div class="day-note">Stone Barns closed</div>
+        </div>
+        <div class="activity-list" id="day-tue" data-day="tue"></div>
+      </div>
+
+      <!-- WEDNESDAY 6/10 -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Wednesday</div>
+          <div class="day-date">June 10</div>
+        </div>
+        <div class="activity-list" id="day-wed" data-day="wed"></div>
+      </div>
+
+      <!-- THURSDAY 6/11 -->
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">Thursday</div>
+          <div class="day-date">June 11</div>
+        </div>
+        <div class="activity-list" id="day-thu" data-day="thu"></div>
+      </div>
+
+      <!-- POOL -->
+      <div class="pool-column">
+        <div class="day-header">
+          <div class="day-name">Candidates</div>
+          <div class="day-date">Swap In</div>
+          <div class="day-note">Alternatives to mix in</div>
+        </div>
+        <div class="activity-list" id="day-pool" data-day="pool"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <p class="section-label">Compare · Food</p>
+    <h2>Restaurants</h2>
+    <p style="font-size:13px;">Both Duckbill's picks (highlighted gold) and Kit's picks (highlighted green) — sorted by relevance to this trip. Stone Barns is the trophy meal; everything else is supporting cast.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Spot</th>
+            <th>★</th>
+            <th>Neighborhood</th>
+            <th>Vibe</th>
+            <th>$/pp</th>
+            <th>GF</th>
+            <th>7-top</th>
+            <th>Verdict</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="kit-top">
+            <td><div class="name">Blue Hill at Stone Barns</div><div class="sub">tasting menu lunch or dinner</div></td>
+            <td><span class="stars">★★</span></td>
+            <td>Tarrytown · 15 min from lodging</td>
+            <td>Farm-to-table tasting, warm and immersive. Menu is improvised around what was harvested that morning. The farm <em>is</em> the menu.</td>
+            <td>$378+ lunch<br>$428+ dinner</td>
+            <td>Designed for it — built around dietary needs</td>
+            <td>Doable but book early</td>
+            <td class="verdict">★ The trophy meal of the trip. Book first.</td>
+          </tr>
+          <tr class="duckbill">
+            <td><div class="name">Eleven Madison Park</div><div class="sub">Duckbill pick</div></td>
+            <td><span class="stars">★★★</span></td>
+            <td>Flatiron · ~1 hr from White Plains</td>
+            <td>Hushed, art-deco room, formal service. Fully plant-based from 2021–2025; Humm reintroduced selective proteins in 2025 (still no butter or cream). Service is unimpeachable — but the room is reverent, not celebratory.</td>
+            <td>$365 food, +$200–300 wine pairing</td>
+            <td>Designed to do full GF with notice</td>
+            <td>Hard 7-top</td>
+            <td class="verdict skip">Skip for this trip — Stone Barns is the better trophy meal for a group celebration. EMP is for a different kind of pilgrimage.</td>
+          </tr>
+          <tr class="kit-top">
+            <td><div class="name">Le Bernardin</div><div class="sub">closed Sundays · lunch Mon–Fri</div></td>
+            <td><span class="stars">★★★</span></td>
+            <td>Midtown West · ~1 hr from WP</td>
+            <td>Eric Ripert. Formal but warm, seafood-driven, hospitality is the opposite of EMP's reverence. Polished service that wants you to enjoy yourself.</td>
+            <td>$210 lunch prix fixe / $350–550 dinner tasting</td>
+            <td>Excellent — seafood-forward, easy to swap</td>
+            <td>Easiest 3★ for 7-top</td>
+            <td class="verdict">★ The NYC 3★ pick. Lunch Tue 6/9 as the food-trophy companion to Stone Barns.</td>
+          </tr>
+          <tr>
+            <td><div class="name">Jungsik</div></td>
+            <td><span class="stars">★★★</span></td>
+            <td>Tribeca · ~1 hr from WP</td>
+            <td>Modern Korean tasting. 2024 3★ promotion. Energy without being scene-y.</td>
+            <td>$295 + $200 pairing</td>
+            <td>Confirmable with notice — rice-based</td>
+            <td>Achievable for 7-top</td>
+            <td class="verdict">Best 3★ "with energy" — alt trophy meal</td>
+          </tr>
+          <tr>
+            <td><div class="name">The Modern</div><div class="sub">at MoMA</div></td>
+            <td><span class="stars">★★</span></td>
+            <td>Midtown</td>
+            <td>Sophisticated, light-filled, sculpture garden views.</td>
+            <td>$178 lunch / $258 dinner</td>
+            <td>Strong</td>
+            <td>Easy 7-top</td>
+            <td class="verdict">Best fine-dining lunch if you do a city day with adults</td>
+          </tr>
+          <tr>
+            <td><div class="name">Per Se</div></td>
+            <td><span class="stars">★★★</span></td>
+            <td>Columbus Circle</td>
+            <td>Most formal of the 3★s — classical French, jackets required.</td>
+            <td>$420</td>
+            <td>Yes with notice</td>
+            <td>Easy 7-top — big dining room</td>
+            <td class="verdict neutral">Doable but Le Bernardin or Jungsik beat it on every axis for this brief</td>
+          </tr>
+          <tr class="skip">
+            <td><div class="name">Atomix</div></td>
+            <td><span class="stars">★★</span></td>
+            <td>Rose Hill</td>
+            <td>Counter omakase. Intense Korean tasting.</td>
+            <td>$385 + $250 pairing</td>
+            <td>Yes</td>
+            <td>BRUTAL — 14-seat counter</td>
+            <td class="verdict skip">Skip — physically too small for 7</td>
+          </tr>
+          <tr class="skip">
+            <td><div class="name">Cote (550 Madison)</div></td>
+            <td><span class="stars">★</span></td>
+            <td>Midtown East</td>
+            <td>Loud, scene-y Korean BBQ. Bro-friendly without being bro.</td>
+            <td>$200–300 with wine</td>
+            <td>Tricky — sauces, marinades, banchan</td>
+            <td>Doable</td>
+            <td class="verdict skip">Skip — GF logistics too messy with 3 GF in the group</td>
+          </tr>
+          <tr>
+            <td><div class="name">Le Coucou</div></td>
+            <td><span class="stars">★</span></td>
+            <td>Soho · ~1 hr from WP</td>
+            <td>French, beautiful room, modern romantic.</td>
+            <td>$150–200</td>
+            <td>Strong</td>
+            <td>Doable</td>
+            <td class="verdict">Strong NYC dinner if you want a non-tasting evening</td>
+          </tr>
+          <tr>
+            <td><div class="name">Frenchette</div></td>
+            <td>—</td>
+            <td>Tribeca · 5 min cab to Vanguard</td>
+            <td>French bistro, energetic, music-adjacent crowd.</td>
+            <td>$90–120</td>
+            <td>Strong</td>
+            <td>Doable</td>
+            <td class="verdict">Sunday pre-Vanguard dinner if you don't want a full tasting</td>
+          </tr>
+          <tr>
+            <td><div class="name">Carbone</div></td>
+            <td><span class="stars">★</span></td>
+            <td>Greenwich Village</td>
+            <td>Big Italian American, scene, tableside theatrics.</td>
+            <td>$150–200</td>
+            <td>Tricky — pasta-heavy menu</td>
+            <td>Hard to book at 7-top</td>
+            <td class="verdict neutral">Wildcard celebratory dinner if Jack would love it</td>
+          </tr>
+          <tr>
+            <td><div class="name">RiverMarket</div></td>
+            <td>—</td>
+            <td>Tarrytown · 10 min from WP</td>
+            <td>Casual farm-to-table — brunch / lunch / casual dinner.</td>
+            <td>$30–50</td>
+            <td>Strong</td>
+            <td>Easy</td>
+            <td class="verdict">Best local "good casual" — kid-friendly, near lodging</td>
+          </tr>
+          <tr>
+            <td><div class="name">Tarry Lodge</div></td>
+            <td>—</td>
+            <td>Port Chester (Westchester)</td>
+            <td>Mario Batali Italian. Group-friendly, lively.</td>
+            <td>$50–80</td>
+            <td>Doable (notice for pasta swap)</td>
+            <td>Easy</td>
+            <td class="verdict">Local dinner option for a kid-inclusive night</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">Compare · Drinks</p>
+    <h2>Bars & cocktails</h2>
+    <p style="font-size:13px;">Duckbill didn't cover bars. Here's the slate, mostly NYC with a few Westchester options.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Spot</th>
+            <th>Neighborhood</th>
+            <th>Type</th>
+            <th>Vibe</th>
+            <th>$/cocktail</th>
+            <th>Group of 7</th>
+            <th>Verdict</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="kit-top">
+            <td><div class="name">Employees Only</div></td>
+            <td>West Village · 510 Hudson</td>
+            <td>Speakeasy</td>
+            <td>Historic NYC bar, lively, kitchen open late</td>
+            <td>$18–22</td>
+            <td>Tight but doable</td>
+            <td class="verdict">★ Post-Vanguard — around the corner from the club</td>
+          </tr>
+          <tr>
+            <td><div class="name">Bemelmans Bar</div></td>
+            <td>UES · The Carlyle</td>
+            <td>Hotel piano bar</td>
+            <td>Iconic Ludwig Bemelmans murals, live piano/jazz</td>
+            <td>$25–30</td>
+            <td>No res, tight</td>
+            <td class="verdict">Iconic NYC bar moment if you do an uptown day</td>
+          </tr>
+          <tr>
+            <td><div class="name">Temple Bar</div></td>
+            <td>NoHo</td>
+            <td>Cocktail lounge</td>
+            <td>Dark, plush, classic. Restored downtown legend.</td>
+            <td>$22–25</td>
+            <td>Doable</td>
+            <td class="verdict">Great for an adult-only night out</td>
+          </tr>
+          <tr>
+            <td><div class="name">Overstory</div></td>
+            <td>FiDi · rooftop at 70 Pine</td>
+            <td>Rooftop cocktail</td>
+            <td>Scenic, scene-y, sunset-driven</td>
+            <td>$24–28</td>
+            <td>Doable, book ahead</td>
+            <td class="verdict">If you want a view-driven drink moment</td>
+          </tr>
+          <tr>
+            <td><div class="name">Death &amp; Co</div></td>
+            <td>East Village</td>
+            <td>Craft cocktail temple</td>
+            <td>OG cocktail bar, no-frills, drink-forward</td>
+            <td>$20–22</td>
+            <td>Tight — small space</td>
+            <td class="verdict neutral">Cocktail-head pick — only if anyone's deep in the cocktail world</td>
+          </tr>
+          <tr>
+            <td><div class="name">Attaboy</div></td>
+            <td>LES</td>
+            <td>Craft cocktail (no menu)</td>
+            <td>Anonymous door, bespoke menu, intimate</td>
+            <td>$20–22</td>
+            <td>Tight</td>
+            <td class="verdict neutral">Same — only for cocktail people</td>
+          </tr>
+          <tr>
+            <td><div class="name">Smalls</div></td>
+            <td>West Village · 3 min walk to Vanguard</td>
+            <td>Jazz club + bar</td>
+            <td>More casual jazz than Vanguard, drinks-first energy</td>
+            <td>$15–18 + cover</td>
+            <td>Easy</td>
+            <td class="verdict">Add-on second jazz night if anyone wants another set</td>
+          </tr>
+          <tr>
+            <td><div class="name">The Long Island Bar</div></td>
+            <td>Cobble Hill, Brooklyn</td>
+            <td>Neighborhood gem</td>
+            <td>Beautiful old diner space, immaculate classics</td>
+            <td>$18–22</td>
+            <td>Tight, no res</td>
+            <td class="verdict neutral">Lovely but Brooklyn — only if you're already there</td>
+          </tr>
+          <tr>
+            <td><div class="name">Mr. Fong's</div></td>
+            <td>Chinatown</td>
+            <td>Dive-cool</td>
+            <td>Loud, late, fun, cocktails without seriousness</td>
+            <td>$14–18</td>
+            <td>Easy</td>
+            <td class="verdict neutral">If the night gets late and silly</td>
+          </tr>
+          <tr>
+            <td><div class="name">Birdsall House</div></td>
+            <td>Peekskill (Westchester) · 25 min from WP</td>
+            <td>Gastropub</td>
+            <td>Local craft beer + food, low-key</td>
+            <td>$10–15</td>
+            <td>Easy</td>
+            <td class="verdict">Westchester option for a low-key drink night</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <p class="section-label">Compare · Spas</p>
+    <h2>Spas</h2>
+    <p style="font-size:13px;">Jack loves sauna + cold plunge — that flips the spa pick away from Duckbill's "treatment room" options (Guerlain, ZZ, Nuansa) and toward thermal-circuit bathhouses.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Spot</th>
+            <th>Neighborhood</th>
+            <th>Format</th>
+            <th>Group of 7</th>
+            <th>Vibe</th>
+            <th>$/pp</th>
+            <th>Verdict</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="kit-top">
+            <td><div class="name">Bathhouse Flatiron</div></td>
+            <td>Flatiron · ~1 hr from WP</td>
+            <td>Thermal circuit + treatments — sauna, steam, hammam, cold plunge, pools, on-site bar</td>
+            <td>Designed for groups, mixed-gender</td>
+            <td>Brooklyn-cool, dim, social, drinks served</td>
+            <td>$200–360 (day pass + massage + scrub)</td>
+            <td class="verdict">★ Jack's exact register. Thermal hangout, drinks, real massages. Book 5–7 day passes for same window.</td>
+          </tr>
+          <tr>
+            <td><div class="name">Bathhouse Williamsburg</div></td>
+            <td>Williamsburg, Brooklyn</td>
+            <td>Same as Flatiron, larger facility</td>
+            <td>Excellent</td>
+            <td>Same — more thermal pools, prettier room</td>
+            <td>$200–360</td>
+            <td class="verdict">Same offering — pick by which side of the river fits your day</td>
+          </tr>
+          <tr>
+            <td><div class="name">World Spa</div></td>
+            <td>Midwood, Brooklyn · ~1.5 hr from WP</td>
+            <td>Full thermal — Russian banya, Finnish saunas, Turkish/Moroccan hammams, Japanese onsen</td>
+            <td>Excellent — 50,000 sq ft</td>
+            <td>Authentic Eastern-European banya energy, older crowd</td>
+            <td>$250–400</td>
+            <td class="verdict">The "real" bathhouse experience — but the Brooklyn schlep from WP is real</td>
+          </tr>
+          <tr class="skip">
+            <td><div class="name">Aire Ancient Baths</div></td>
+            <td>Tribeca</td>
+            <td>Candlelit thermal baths in a historic factory</td>
+            <td>Allows groups but vibe is couple-y</td>
+            <td>Romantic-cinematic, whispered</td>
+            <td>$300–450</td>
+            <td class="verdict skip">Wrong vibe for 7 — better for couples</td>
+          </tr>
+          <tr>
+            <td><div class="name">Othership</div></td>
+            <td>Flatiron / Williamsburg</td>
+            <td>Guided 75-min sauna+ice classes (cohort-based)</td>
+            <td>Easy — just book 7 spots in one class</td>
+            <td>Wellness-bro, modern, group-fitness energy</td>
+            <td>$60–75</td>
+            <td class="verdict">Pre-Bathhouse add-on or standalone short session — fits Jack's profile too</td>
+          </tr>
+          <tr class="duckbill">
+            <td><div class="name">Guerlain Wellness Spa</div><div class="sub">Duckbill pick</div></td>
+            <td>Waldorf Astoria, Midtown East</td>
+            <td>Treatment rooms — massages, facials</td>
+            <td>Doable but separated into individual rooms</td>
+            <td>Hotel-luxury, polished, formal</td>
+            <td>$320–500</td>
+            <td class="verdict skip">Wrong format — Jack wants thermal hangout, not 80-min in a private room</td>
+          </tr>
+          <tr class="duckbill skip">
+            <td><div class="name">ZZ Day Spa</div><div class="sub">Duckbill pick</div></td>
+            <td>Midtown</td>
+            <td>Spa party packages — massages, manicures, etc</td>
+            <td>Group-optimized</td>
+            <td>Bachelorette-energy — fluorescent, busy</td>
+            <td>$190–255</td>
+            <td class="verdict skip">Wrong register entirely for this group</td>
+          </tr>
+          <tr class="duckbill skip">
+            <td><div class="name">Nuansa Spa</div><div class="sub">Duckbill pick</div></td>
+            <td>Fifth Avenue</td>
+            <td>Treatment rooms, Indonesian-style</td>
+            <td>OK for small groups</td>
+            <td>Boutique, serene, quiet</td>
+            <td>$220–280</td>
+            <td class="verdict skip">Wrong format — same problem as Guerlain, less luxe</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <p>Built for Alex · last updated 2026-05-11 · saves to localStorage in this browser</p>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+// ===== Activity library =====
+// Each activity is a self-contained card with metadata. Defaults seed the week;
+// pool holds the alternates.
+
+const ACTIVITIES = {
+  // ----- LOCKED -----
+  'arrive': {
+    locked: true,
+    time: 'All day',
+    title: 'Arrival in White Plains',
+    detail: "Settle in with kids. Low-key dinner — pizza, takeout, kitchen night with Betsy &amp; Ken.",
+    tags: ['kids', 'west']
+  },
+  'vanguard': {
+    locked: true,
+    time: '8:00 pm',
+    title: 'Kurt Rosenwinkel Quintet @ Village Vanguard',
+    detail: "GA seating, arrive 7:30. Set runs ~75–90 min. Out by 9:30–10pm.",
+    tags: ['adults', 'city'],
+    booking: 'Tickets in hand (Miranda)'
+  },
+
+  // ----- HEADLINE EXPERIENCES -----
+  'stone-barns': {
+    time: 'Lunch · 12pm',
+    title: 'Blue Hill at Stone Barns',
+    detail: "3-hour tasting menu, $378+/pp. 15 min from lodging. Trophy meal of the trip. Improvised menu — handles GF flawlessly.",
+    tags: ['adults', 'west'],
+    booking: 'Book on Resy — Wed 6/10 or Thu 6/11 (closed Mon/Tue)'
+  },
+  'bathhouse': {
+    time: 'Afternoon · 2-5:30pm',
+    title: 'Bathhouse Flatiron',
+    detail: "Thermal circuit + massages + hammam scrubs. Drinks at on-site bar. ~$200-300/pp.",
+    tags: ['adults', 'city'],
+    booking: 'Book 7 day passes online, ~2 weeks out'
+  },
+
+  // ----- WESTCHESTER / HUDSON VALLEY -----
+  'tarrytown': {
+    time: 'Day',
+    title: 'Tarrytown & Sleepy Hollow wander',
+    detail: "Walk Main Street, visit Lyndhurst or Kykuit Rockefeller Estate, ice cream, low-key. Kid-friendly.",
+    tags: ['kids', 'west']
+  },
+  'dia-beacon': {
+    time: 'Day',
+    title: 'Dia:Beacon',
+    detail: "Massive contemporary art museum in a former Nabisco printing factory. ~45 min drive. Kids tolerate, adults love.",
+    tags: ['kids', 'west']
+  },
+  'storm-king': {
+    time: 'Day',
+    title: 'Storm King Art Center',
+    detail: "500-acre outdoor sculpture park. ~1 hr drive. Big skies, picnic vibes, kids can run.",
+    tags: ['kids', 'west']
+  },
+  'cold-spring': {
+    time: 'Day',
+    title: 'Cold Spring day trip',
+    detail: "Adorable Hudson River town. Antique shops, riverside walk, lunch at Hudson Hil's. ~30 min drive.",
+    tags: ['kids', 'west']
+  },
+  'rye-playland': {
+    time: 'Day',
+    title: 'Rye Playland',
+    detail: "Historic kid-friendly amusement park on Long Island Sound. ~20 min drive. Pure kid moment.",
+    tags: ['kids', 'west']
+  },
+  'bronx-zoo': {
+    time: 'Day',
+    title: 'Bronx Zoo',
+    detail: "World-class zoo, 40 min drive. Kid-magnet day. Bring sunscreen.",
+    tags: ['kids', 'west']
+  },
+  'wp-pool-day': {
+    time: 'Day',
+    title: 'WP pool / park day',
+    detail: "Low-key day at Betsy & Ken's or local park/pool. Kids decompress, adults breathe.",
+    tags: ['kids', 'west']
+  },
+  'river-market-brunch': {
+    time: 'Brunch · 10am',
+    title: 'Brunch at RiverMarket',
+    detail: "Tarrytown · 10 min from lodging. Farm-to-table, GF-friendly, kid-friendly. Easy start.",
+    tags: ['kids', 'west'],
+    booking: 'OpenTable'
+  },
+
+  // ----- NYC ADULT DAY -----
+  'whitney': {
+    time: 'Afternoon',
+    title: 'Whitney Museum',
+    detail: "Meatpacking District. Walk High Line after. Walkable to West Village dinner spots.",
+    tags: ['adults', 'city']
+  },
+  'moma': {
+    time: 'Afternoon',
+    title: 'MoMA',
+    detail: "Midtown. Pair with lunch at The Modern (in-museum 2★).",
+    tags: ['adults', 'city']
+  },
+  'nyc-walk-drinks': {
+    time: 'Afternoon',
+    title: 'NYC walk + drinks',
+    detail: "High Line → Hudson Yards → drinks at Overstory rooftop or Bemelmans uptown.",
+    tags: ['adults', 'city']
+  },
+
+  // ----- DINNER OPTIONS -----
+  'frenchette-dinner': {
+    time: 'Dinner · 5:30pm',
+    title: 'Dinner at Frenchette',
+    detail: "Tribeca. French bistro, GF-friendly. 5-min cab to Vanguard.",
+    tags: ['adults', 'city'],
+    booking: 'Resy 30 days out'
+  },
+  'le-bernardin-lunch': {
+    time: 'Lunch · 12:30pm',
+    title: 'Lunch at Le Bernardin',
+    detail: "Midtown · 3★. 4-course prix fixe ~$210/pp. Eric Ripert, seafood-forward, polished but warm. <strong>Closed Sundays</strong> — must be a weekday lunch (Mon-Fri 12-2:30pm).",
+    tags: ['adults', 'city'],
+    booking: 'Resy on the 1st of each month for the following month'
+  },
+  'tarry-lodge-dinner': {
+    time: 'Dinner',
+    title: 'Dinner at Tarry Lodge',
+    detail: "Port Chester · 25 min from WP. Mario Batali Italian, kid-friendly, group-friendly.",
+    tags: ['kids', 'west'],
+    booking: 'OpenTable'
+  },
+  'pre-vanguard-snacks': {
+    time: 'Pre-show · 6:30pm',
+    title: 'Light bites near Vanguard',
+    detail: "Buvette (French wine bar), Wallflower (cocktails + small plates), or oysters at The Long Island Bar. Keep it light.",
+    tags: ['adults', 'city']
+  },
+
+  // ----- POST-VANGUARD -----
+  'employees-only': {
+    time: 'Late · 10pm',
+    title: 'Drinks at Employees Only',
+    detail: "Around the corner from Vanguard at 510 Hudson. Speakeasy, food till late, lively. Perfect cool-down.",
+    tags: ['adults', 'city']
+  },
+
+  // ----- ADD-ONS -----
+  'othership': {
+    time: '75-min session',
+    title: 'Othership sauna+ice class',
+    detail: "Guided sauna + cold plunge class. $60-75/pp. Pre-Bathhouse warmup or standalone short session.",
+    tags: ['adults', 'city']
+  },
+  'smalls-jazz': {
+    time: 'Late',
+    title: 'Second jazz night at Smalls',
+    detail: "Less reverent than Vanguard, drinks-first. 3-min walk from Vanguard. For the heads.",
+    tags: ['adults', 'city']
+  },
+  'bemelmans': {
+    time: 'Evening',
+    title: 'Cocktails at Bemelmans',
+    detail: "UES · The Carlyle. Live piano/jazz, iconic. Dress up a little.",
+    tags: ['adults', 'city']
+  }
+};
+
+// ===== Default plan =====
+const DEFAULT_PLAN = {
+  fri: ['arrive'],
+  sat: ['tarrytown', 'tarry-lodge-dinner'],
+  sun: ['river-market-brunch', 'bathhouse', 'pre-vanguard-snacks', 'vanguard', 'employees-only'],
+  mon: ['wp-pool-day'],
+  tue: ['le-bernardin-lunch', 'whitney', 'bemelmans'],
+  wed: ['stone-barns'],
+  thu: ['dia-beacon'],
+  pool: ['storm-king', 'cold-spring', 'rye-playland', 'bronx-zoo', 'frenchette-dinner', 'moma', 'othership', 'smalls-jazz', 'nyc-walk-drinks']
+};
+
+// ===== Rendering =====
+function renderCard(id) {
+  const a = ACTIVITIES[id];
+  if (!a) return '';
+  const tagsHtml = (a.tags || []).map(t => {
+    const label = {adults: 'Adults', kids: 'Kid-OK', city: 'NYC', west: 'Westchester'}[t] || t;
+    return `<span class="tag ${t}">${label}</span>`;
+  }).join('');
+  const lockedClass = a.locked ? 'locked' : '';
+  const lockedTag = a.locked ? '<span class="tag locked-tag">Locked</span>' : '';
+  const bookingHtml = a.booking ? `<div class="card-booking">${a.booking}</div>` : '';
+  return `
+    <div class="activity-card ${lockedClass}" data-id="${id}">
+      <div class="card-meta">
+        <span class="card-time">${a.time}</span>
+        ${lockedTag}
+        ${tagsHtml}
+      </div>
+      <div class="card-title">${a.title}</div>
+      <div class="card-detail">${a.detail}</div>
+      ${bookingHtml}
+    </div>
+  `;
+}
+
+function renderPlan(plan) {
+  Object.keys(plan).forEach(day => {
+    const list = document.getElementById('day-' + day);
+    if (!list) return;
+    list.innerHTML = plan[day].map(renderCard).join('');
+  });
+}
+
+// ===== State =====
+const STORAGE_KEY = 'jack-bday-plan-v1';
+
+function loadPlan() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return DEFAULT_PLAN;
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed;
+  } catch (e) {
+    return DEFAULT_PLAN;
+  }
+}
+
+function savePlan() {
+  const plan = {};
+  document.querySelectorAll('.activity-list').forEach(list => {
+    const day = list.dataset.day;
+    plan[day] = Array.from(list.querySelectorAll('.activity-card')).map(c => c.dataset.id);
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(plan));
+}
+
+function resetPlan() {
+  if (!confirm('Reset to default plan? Your current arrangement will be lost.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderPlan(DEFAULT_PLAN);
+  initSortables();
+}
+
+// ===== Sortable init =====
+function initSortables() {
+  document.querySelectorAll('.activity-list').forEach(list => {
+    new Sortable(list, {
+      group: 'agenda',
+      animation: 150,
+      filter: '.locked',
+      preventOnFilter: false,
+      onMove: function(evt) {
+        if (evt.dragged.classList.contains('locked')) return false;
+        return true;
+      },
+      onEnd: function() {
+        savePlan();
+      }
+    });
+  });
+}
+
+// ===== Boot =====
+renderPlan(loadPlan());
+initSortables();
+</script>
+</body>
+</html>
