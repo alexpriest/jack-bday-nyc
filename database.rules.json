@@ -1,0 +1,106 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "reactions": {
+      "$dayKey": {
+        "$emoji": {
+          "$uid": {
+            ".read": true,
+            ".write": true,
+            ".validate": "newData.isBoolean()"
+          }
+        }
+      }
+    },
+    "votes": {
+      "$option": {
+        "$uid": {
+          ".read": true,
+          ".write": true,
+          ".validate": "newData.isBoolean()"
+        }
+      }
+    },
+    "bestof-votes": {
+      "$item": {
+        "$uid": {
+          ".read": true,
+          ".write": true,
+          ".validate": "newData.isBoolean()"
+        }
+      }
+    },
+    "checklist": {
+      "$item": {
+        ".read": true,
+        "$uid": {
+          ".write": true,
+          ".validate": "newData.isString() || newData.isBoolean()"
+        }
+      }
+    },
+    "comments": {
+      "$dayId": {
+        ".read": true,
+        "$commentId": {
+          ".write": true,
+          ".validate": "newData.hasChildren(['userId', 'text', 'timestamp'])"
+        }
+      }
+    },
+    "notes": {
+      "$dayId": {
+        ".read": true,
+        "$noteId": {
+          ".write": true,
+          ".validate": "newData.hasChildren(['userId', 'text', 'timestamp'])"
+        }
+      }
+    },
+    "custom-votes": {
+      ".read": true,
+      "$id": {
+        ".write": true,
+        ".validate": "newData.hasChildren(['label', 'createdBy'])"
+      }
+    },
+    "jack-bday": {
+      "users": {
+        "$uid": {
+          ".read": true,
+          ".write": true
+        }
+      },
+      "plan": {
+        ".read": true,
+        ".write": true
+      },
+      "candidates": {
+        ".read": true,
+        ".write": true
+      },
+      "comments": {
+        ".read": true,
+        "$nodeId": {
+          ".write": true
+        }
+      },
+      "votes": {
+        ".read": true,
+        "$option": {
+          "$uid": {
+            ".write": true
+          }
+        }
+      }
+    },
+    ".info": {
+      ".read": true
+    }
+  }
+}

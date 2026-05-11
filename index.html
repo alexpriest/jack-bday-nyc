@@ -6,15 +6,20 @@
 <title>Jackhattan — June 5–11, 2026</title>
 <meta name="description" content="Jackhattan — Jack's birthday week in NYC + Westchester. 7 adults, June 5–11, 2026.">
 <meta property="og:title" content="Jackhattan — June 5–11, 2026">
-<meta property="og:description" content="Jack's birthday week in NYC + Westchester. Drag-to-rearrange agenda, comparison tables for restaurants/bars/spas, hour-by-hour calendar.">
+<meta property="og:description" content="Jack's birthday week in NYC + Westchester. Hour-by-hour calendar, comparison tables, collaborative planning.">
 <meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
   :root {
     --bg: #FFFCF0;
     --paper: #FAF7EC;
+    --paper-2: #F5F1E5;
     --text: #6F6E69;
+    --text-light: #9C9A92;
     --heading: #100F0F;
     --accent: #BC5215;
+    --accent-2: #AF3029;
     --accent-soft: #E8D4C0;
     --border: #E6E4D9;
     --border-strong: #B7B5AC;
@@ -23,6 +28,25 @@
     --pool-bg: #FAF6E8;
     --duckbill: #FFF4D9;
     --kit-pick: #EDF3DA;
+    --travel: #EFEAE0;
+    --travel-text: #948A6E;
+    --warn: #C25E1F;
+    --warn-bg: #FBEEDF;
+
+    /* Activity colors — desaturated Flexoki-esque */
+    --c-meal: #C2967D;       /* warm tan */
+    --c-meal-bg: #F4E8DD;
+    --c-spa: #8FA88F;        /* sage */
+    --c-spa-bg: #E6EFE2;
+    --c-show: #957BB0;       /* muted purple */
+    --c-show-bg: #ECE2F0;
+    --c-activity: #8FA0BD;   /* blue-grey */
+    --c-activity-bg: #E1E8F0;
+    --c-travel-color: #B7B5AC;
+    --c-kids: #B5A03C;       /* mustard */
+    --c-kids-bg: #F4ECC8;
+    --c-drinks: #BC5215;     /* accent */
+    --c-drinks-bg: #FAE6D5;
   }
 
   * { box-sizing: border-box; }
@@ -34,12 +58,13 @@
     font-size: 15px;
     line-height: 1.6;
     margin: 0;
-    padding: 32px 24px 80px;
+    padding: 0;
   }
 
   .container {
-    max-width: 1500px;
+    max-width: 1600px;
     margin: 0 auto;
+    padding: 32px 24px 80px;
   }
 
   h1, h2, h3, h4 {
@@ -49,7 +74,7 @@
     font-weight: 400;
   }
 
-  h1 { font-size: 36px; letter-spacing: -0.015em; margin-bottom: 8px; }
+  h1 { font-size: 42px; letter-spacing: -0.02em; margin-bottom: 8px; }
   h2 { font-size: 24px; margin-top: 0; }
   h3 { font-size: 17px; margin-bottom: 12px; }
 
@@ -70,14 +95,87 @@
     font-size: 16px;
     color: var(--text);
     margin-bottom: 24px;
+    max-width: 720px;
   }
 
-  /* Top meta strip */
+  /* ============ User identity bar ============ */
+  .user-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255, 252, 240, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+
+  .user-bar-left { display: flex; align-items: center; gap: 12px; }
+  .user-bar-right { display: flex; align-items: center; gap: 8px; }
+
+  .presence-list { display: flex; gap: 4px; align-items: center; }
+
+  .avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 1.5px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--border);
+    cursor: default;
+  }
+  .avatar.you { background: var(--accent); color: white; }
+  .avatar.small { width: 20px; height: 20px; font-size: 9px; }
+
+  .user-name-input {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-family: Georgia, serif;
+    font-size: 12px;
+    color: var(--heading);
+    width: 140px;
+  }
+  .user-name-input:focus { outline: none; border-color: var(--accent); }
+
+  .sync-status {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sync-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-light);
+  }
+  .sync-status.live .sync-dot { background: #6A8E4D; }
+  .sync-status.offline .sync-dot { background: var(--warn); }
+
+  /* ============ Meta strip ============ */
   .meta-strip {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    margin: 24px 0 32px;
+    margin: 24px 0 24px;
     padding: 16px;
     background: var(--paper);
     border: 1px solid var(--border);
@@ -85,7 +183,7 @@
     font-size: 13px;
   }
   .meta-strip > div strong {
-    color: var(--heading);
+    color: var(--text);
     font-weight: normal;
     display: block;
     font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
@@ -93,90 +191,359 @@
     text-transform: uppercase;
     letter-spacing: 0.12em;
     margin-bottom: 6px;
-    color: var(--text);
+  }
+
+  /* ============ Stone Barns countdown ============ */
+  .countdown-banner {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn);
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .countdown-banner strong {
+    color: var(--warn);
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .countdown-banner .clock {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-weight: 600;
+    color: var(--heading);
+    margin-left: auto;
   }
 
   hr.rule {
     border: none;
     border-top: 1px solid var(--border-strong);
-    margin: 48px 0 32px;
+    margin: 40px 0 28px;
   }
 
-  /* Toolbar */
+  /* ============ Toolbar ============ */
   .toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
   }
+
+  .toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .seg-control {
+    display: inline-flex;
+    background: var(--paper);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .seg-control button {
+    background: transparent;
+    border: none;
+    padding: 6px 12px;
+    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    cursor: pointer;
+    border-right: 1px solid var(--border);
+  }
+  .seg-control button:last-child { border-right: none; }
+  .seg-control button.active { background: var(--heading); color: var(--bg); }
+  .seg-control button:hover:not(.active) { background: var(--bg); }
 
   button.btn {
     background: var(--card-bg);
     border: 1px solid var(--border-strong);
     color: var(--heading);
-    padding: 6px 14px;
+    padding: 6px 12px;
     font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     cursor: pointer;
     border-radius: 3px;
   }
   button.btn:hover { background: var(--bg); }
 
-  /* Week grid */
-  .week-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr) 280px;
-    gap: 10px;
-    margin: 16px 0 24px;
+  /* ============ Day filter chips ============ */
+  .day-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+    font-size: 11px;
   }
-
-  .day-column, .pool-column {
+  .day-filter .label {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-light);
+    margin-right: 4px;
+    align-self: center;
+  }
+  .day-filter button {
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 10px;
-    min-height: 360px;
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 11px;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .day-filter button.active {
+    background: var(--heading);
+    color: var(--bg);
+    border-color: var(--heading);
+  }
+
+  /* ============ Legend ============ */
+  .legend {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-size: 11px;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .legend-swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 4px;
+    vertical-align: -1px;
+    border: 1px solid var(--border);
   }
 
-  .pool-column {
-    background: var(--pool-bg);
-    border: 1px dashed var(--border-strong);
+  /* ============ CALENDAR VIEW ============ */
+  .calendar-wrap {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
   }
-
-  .day-header {
+  .calendar {
+    display: grid;
+    grid-template-columns: 56px repeat(var(--day-count, 7), 1fr);
+    min-height: 700px;
+  }
+  /* Header row */
+  .cal-corner { background: var(--paper); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+  .cal-day-head {
+    background: var(--paper);
     border-bottom: 1px solid var(--border);
-    padding-bottom: 8px;
-    margin-bottom: 10px;
-    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    padding: 10px 8px;
+    text-align: center;
+    position: sticky;
+    top: 41px;
+    z-index: 10;
   }
-
-  .day-name {
-    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
+  .cal-day-head:last-child { border-right: none; }
+  .cal-day-head .day-name {
+    font-family: 'Helvetica Neue', sans-serif;
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     color: var(--text);
   }
-
-  .day-date {
+  .cal-day-head .day-date {
     font-family: Georgia, serif;
-    font-size: 17px;
+    font-size: 16px;
     color: var(--heading);
     line-height: 1.2;
     margin-top: 2px;
   }
+  .cal-day-head .day-tag {
+    margin-top: 4px;
+    display: inline-block;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1px 5px;
+    border-radius: 2px;
+    background: var(--paper-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .cal-day-head .day-tag.adults { background: #F1E2CC; color: #7A4516; border-color: #E0CDB0; }
+  .cal-day-head .day-tag.family { background: #E2EDD0; color: #4A6B1F; border-color: #C9DCAE; }
+  .cal-day-head .day-tag.mixed { background: #DCE6F0; color: #2A4870; border-color: #BFD0E2; }
+  .cal-day-head .day-tag.locked { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft); }
 
-  .day-note {
+  /* Time gutter */
+  .cal-hour-label {
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    padding: 2px 6px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 9px;
+    color: var(--text-light);
+    text-align: right;
+    height: 60px;
+  }
+
+  /* Day column body */
+  .cal-day-col {
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    min-height: 60px;
+  }
+  .cal-day-col:last-child { border-right: none; }
+  /* Half-hour grid lines via gradient */
+  .cal-day-col.hour-cell {
+    background:
+      linear-gradient(to bottom, transparent 29px, var(--border) 29px, var(--border) 30px, transparent 30px);
+  }
+
+  /* Event blocks (absolute positioned in column) */
+  .cal-event {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 11px;
+    line-height: 1.25;
+    border-left: 3px solid var(--c-activity);
+    background: var(--c-activity-bg);
+    color: var(--heading);
+    overflow: hidden;
+    cursor: grab;
+    transition: box-shadow 0.12s, transform 0.12s;
+  }
+  .cal-event:hover {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    z-index: 5;
+  }
+  .cal-event.dragging { opacity: 0.4; }
+  .cal-event.locked { cursor: not-allowed; opacity: 0.95; }
+
+  .cal-event.kind-meal { border-left-color: var(--c-meal); background: var(--c-meal-bg); }
+  .cal-event.kind-spa { border-left-color: var(--c-spa); background: var(--c-spa-bg); }
+  .cal-event.kind-show { border-left-color: var(--c-show); background: var(--c-show-bg); }
+  .cal-event.kind-activity { border-left-color: var(--c-activity); background: var(--c-activity-bg); }
+  .cal-event.kind-kids { border-left-color: var(--c-kids); background: var(--c-kids-bg); }
+  .cal-event.kind-drinks { border-left-color: var(--c-drinks); background: var(--c-drinks-bg); }
+  .cal-event.kind-travel {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--travel),
+      var(--travel) 4px,
+      transparent 4px,
+      transparent 8px
+    );
+    border-left: 2px dashed var(--c-travel-color);
+    color: var(--travel-text);
+    font-style: italic;
+    cursor: default;
+  }
+
+  .cal-event .ev-time {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text);
+    opacity: 0.85;
+  }
+  .cal-event .ev-title {
+    font-family: Georgia, serif;
+    font-size: 12px;
+    color: var(--heading);
+    margin-top: 1px;
+    line-height: 1.2;
+  }
+  .cal-event .ev-detail {
+    font-size: 10px;
+    color: var(--text);
+    margin-top: 1px;
+    line-height: 1.3;
+  }
+
+  /* Tiny actions on hover */
+  .cal-event .ev-actions {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    display: none;
+    gap: 2px;
+  }
+  .cal-event:hover .ev-actions { display: flex; }
+  .cal-event .ev-action {
+    background: rgba(255,255,255,0.85);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 0 4px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 9px;
+    color: var(--text);
+    cursor: pointer;
+    line-height: 1.4;
+  }
+  .cal-event .ev-action:hover { background: white; }
+
+  /* ============ LIST VIEW (carry forward) ============ */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--day-count, 7), 1fr) 280px;
+    gap: 10px;
+    margin: 16px 0 24px;
+  }
+  .day-column, .pool-column {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+  }
+  .pool-column {
+    background: var(--pool-bg);
+    border: 1px dashed var(--border-strong);
+  }
+  .day-header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+  .day-header .day-name {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text);
+  }
+  .day-header .day-date {
+    font-family: Georgia, serif;
+    font-size: 17px;
+    color: var(--heading);
+  }
+  .day-header .day-note {
     font-size: 11px;
     color: var(--accent);
     margin-top: 3px;
     font-style: italic;
   }
-
   .activity-list {
     flex: 1;
     display: flex;
@@ -184,8 +551,6 @@
     gap: 6px;
     min-height: 100px;
   }
-
-  /* Activity cards */
   .activity-card {
     background: var(--card-bg);
     border: 1px solid var(--border);
@@ -194,48 +559,35 @@
     padding: 7px 9px;
     font-size: 12px;
     cursor: grab;
-    transition: box-shadow 0.12s, transform 0.12s, border-color 0.12s;
-    user-select: none;
+    transition: box-shadow 0.12s;
   }
-
-  .activity-card:hover {
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    border-left-color: var(--accent);
+  .activity-card.kind-meal { border-left-color: var(--c-meal); }
+  .activity-card.kind-spa { border-left-color: var(--c-spa); }
+  .activity-card.kind-show { border-left-color: var(--c-show); }
+  .activity-card.kind-activity { border-left-color: var(--c-activity); }
+  .activity-card.kind-kids { border-left-color: var(--c-kids); }
+  .activity-card.kind-drinks { border-left-color: var(--c-drinks); }
+  .activity-card:hover { box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .activity-card.dragging { opacity: 0.4; }
+  .activity-card.locked { background: var(--locked-bg); border-left-color: var(--accent); cursor: not-allowed; }
+  .activity-card .card-meta {
+    display: flex; flex-wrap: wrap; gap: 3px; align-items: center; margin-bottom: 3px;
   }
-
-  .activity-card.dragging {
-    opacity: 0.4;
+  .activity-card .card-time {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text); margin-right: 4px;
   }
-
-  .activity-card.locked {
-    background: var(--locked-bg);
-    border-left-color: var(--accent);
-    cursor: not-allowed;
+  .activity-card .card-title { color: var(--heading); font-family: Georgia, serif; font-size: 13px; line-height: 1.3; }
+  .activity-card .card-detail { font-size: 11px; color: var(--text); margin-top: 3px; line-height: 1.4; }
+  .activity-card .card-booking {
+    font-size: 10px; color: var(--accent); margin-top: 4px;
+    font-family: 'Helvetica Neue', sans-serif;
+    text-transform: uppercase; letter-spacing: 0.06em;
   }
-  .activity-card.locked:hover {
-    box-shadow: none;
-  }
-
-  .card-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 3px;
-    align-items: center;
-    margin-bottom: 3px;
-  }
-
-  .card-time {
-    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text);
-    margin-right: 4px;
-  }
-
   .tag {
     display: inline-block;
-    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
+    font-family: 'Helvetica Neue', sans-serif;
     font-size: 8.5px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -252,31 +604,7 @@
   .tag.west { background: #EBD9D4; color: #6B3030; border-color: #DEC5BE; }
   .tag.locked-tag { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft); }
 
-  .card-title {
-    color: var(--heading);
-    font-family: Georgia, serif;
-    font-size: 13px;
-    line-height: 1.3;
-    margin-top: 2px;
-  }
-
-  .card-detail {
-    font-size: 11px;
-    color: var(--text);
-    margin-top: 3px;
-    line-height: 1.4;
-  }
-
-  .card-booking {
-    font-size: 10px;
-    color: var(--accent);
-    margin-top: 4px;
-    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  /* Tables */
+  /* ============ Tables ============ */
   .table-wrap {
     overflow-x: auto;
     margin: 12px 0 24px;
@@ -284,124 +612,145 @@
     border-radius: 4px;
     background: var(--card-bg);
   }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-
-  th, td {
-    text-align: left;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
-
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
   th {
-    font-family: 'Helvetica Neue', -apple-system, Arial, sans-serif;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text);
-    font-weight: 400;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text); font-weight: 400;
     border-bottom: 1px solid var(--border-strong);
     background: var(--paper);
     white-space: nowrap;
   }
-
-  td .name {
-    color: var(--heading);
-    font-weight: 400;
-  }
-
-  td .sub {
-    font-size: 11px;
-    color: var(--text);
-    font-style: italic;
-  }
-
+  td .name { color: var(--heading); font-weight: 400; }
+  td .sub { font-size: 11px; color: var(--text); font-style: italic; }
   tr.duckbill td { background: var(--duckbill); }
   tr.kit-top td { background: var(--kit-pick); }
   tr.skip td { opacity: 0.55; }
-
-  .verdict {
-    font-style: italic;
-    color: var(--accent);
-    font-size: 12px;
-  }
-
+  tr.in-pool td { box-shadow: inset 3px 0 0 var(--accent); }
+  .verdict { font-style: italic; color: var(--accent); font-size: 12px; }
   .verdict.neutral { color: var(--text); font-style: normal; }
   .verdict.skip { color: var(--text); text-decoration: line-through; font-style: normal; opacity: 0.7; }
+  .stars { color: var(--accent); font-size: 12px; }
 
-  .stars {
-    color: var(--accent);
-    font-size: 12px;
-  }
-
-  /* Legend */
-  .legend {
-    display: flex;
-    gap: 16px;
-    font-size: 11px;
-    margin-bottom: 8px;
-    color: var(--text);
-  }
-  .legend-swatch {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
-    margin-right: 4px;
-    vertical-align: -1px;
+  .row-add-btn {
+    background: transparent;
     border: 1px solid var(--border);
-  }
-
-  footer {
-    margin-top: 60px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border);
-    font-size: 12px;
     color: var(--text);
+    border-radius: 2px;
+    padding: 2px 8px;
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .row-add-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .row-add-btn.added { background: var(--kit-pick); color: var(--heading); border-color: #98AC65; }
+  .row-add-btn.added:hover { background: var(--bg); color: var(--text); border-color: var(--border); }
+
+  /* ============ Footer ============ */
+  footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text); }
+
+  /* Offline banner */
+  .offline-banner {
+    display: none;
+    position: fixed;
+    bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--warn-bg);
+    color: var(--heading);
+    border: 1px solid var(--warn);
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 12px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .offline-banner.visible { display: block; }
+
+  /* Toasts */
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--heading);
+    color: white;
+    border-radius: 4px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-family: Georgia, serif;
+    z-index: 1000;
+    opacity: 0; transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .toast.visible { opacity: 1; }
+
+  /* Pool column inside calendar wrap */
+  .pool-section {
+    margin: 20px 0;
   }
 
+  /* Responsive */
   @media (max-width: 1200px) {
-    .week-grid { grid-template-columns: repeat(4, 1fr); }
     .meta-strip { grid-template-columns: 1fr 1fr; }
   }
-
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
+    .calendar { grid-template-columns: 48px 1fr; min-height: 500px; }
+    .cal-day-head { position: static; }
     .week-grid { grid-template-columns: 1fr; }
     .meta-strip { grid-template-columns: 1fr; }
-    body { padding: 16px; }
+  }
+  @media (max-width: 700px) {
+    .container { padding: 16px; }
+    h1 { font-size: 30px; }
+    .user-bar { padding: 6px 12px; flex-wrap: wrap; gap: 8px; }
   }
 </style>
 </head>
 <body>
+
+<!-- USER BAR -->
+<div class="user-bar">
+  <div class="user-bar-left">
+    <span class="section-label" style="margin:0;">Jackhattan</span>
+    <span class="sync-status" id="syncStatus"><span class="sync-dot"></span><span id="syncStatusText">connecting…</span></span>
+  </div>
+  <div class="user-bar-right">
+    <div class="presence-list" id="presenceList"></div>
+    <input type="text" id="userNameInput" class="user-name-input" placeholder="Your name…" maxlength="24">
+  </div>
+</div>
+
 <div class="container">
 
   <header>
     <p class="section-label">June 5–11, 2026 · 7 adults + kids · White Plains lodging</p>
     <h1>Jackhattan</h1>
-    <p class="lede">Jack's birthday week — drag activities between days, swap candidates from the comparison tables below, and play with the shape of the week. Locked items (Vanguard show, arrival night) are fixed.</p>
+    <p class="lede">Jack's birthday week. Drag activities between days, swap candidates in and out from the comparison tables below, and dial in the timing on the hour-by-hour calendar. State syncs live for everyone editing.</p>
 
     <div class="meta-strip">
       <div>
         <strong>Locked anchor</strong>
-        Sun 6/7 · 8pm<br>Kurt Rosenwinkel Quintet @ Village Vanguard (7 tix, Miranda has them, GA seating — arrive 7:30 for good seats)
+        Sun 6/7 · 8pm<br>Kurt Rosenwinkel Quintet @ Village Vanguard (7 tix, Miranda has them, GA — arrive 7:30)
       </div>
       <div>
-        <strong>To book ASAP</strong>
-        Blue Hill at Stone Barns (Wed 6/10 or Thu 6/11 lunch — both open weekdays, Mon-Tue they're closed)<br>Bathhouse Flatiron (Sun 6/7 mid-day)
+        <strong>To book</strong>
+        Blue Hill at Stone Barns (Wed 6/10 or Thu 6/11)<br>Le Bernardin lunch Tue 6/9<br>Bathhouse Flatiron Sun 6/7
       </div>
       <div>
         <strong>Dietary</strong>
-        Miranda, AJ, Ash gluten-free (3 of 7).<br>Restaurants picked accommodate this cleanly.
+        Miranda, AJ, Ash gluten-free (3 of 7). All trophy picks accommodate cleanly.
       </div>
       <div>
         <strong>Geography</strong>
-        White Plains → Stone Barns = 15 min drive.<br>White Plains → Manhattan = ~1 hr (Metro-North or car).
+        White Plains → Stone Barns: 15 min<br>White Plains → Manhattan: ~1 hr (train + cab)
       </div>
+    </div>
+
+    <div class="countdown-banner" id="countdownBanner">
+      <strong>Heads up</strong>
+      Stone Barns reservations for Wed 6/10 &amp; Thu 6/11 open on the 30-day rolling window — <strong>book Fri May 15</strong> the moment the slot drops on Resy.
+      <span class="clock" id="countdownClock"></span>
     </div>
   </header>
 
@@ -410,98 +759,52 @@
   <section>
     <p class="section-label">Plan</p>
     <div class="toolbar">
-      <h2>The week — drag to rearrange</h2>
-      <button class="btn" onclick="resetPlan()">Reset to default</button>
+      <h2 style="margin:0;">The week</h2>
+      <div class="toolbar-group">
+        <div class="seg-control" id="viewSwitcher">
+          <button data-view="calendar" class="active">Calendar</button>
+          <button data-view="list">List</button>
+        </div>
+        <button class="btn" onclick="resetPlan()">Reset</button>
+      </div>
     </div>
-    <p style="font-size: 13px;">Each day below has a stack of activity cards. Drag any non-locked card to a different day, or into the "Candidates" pool on the right. The pool holds alternative activities you can swap in. Your changes save automatically — refresh and they'll still be there. Reset to start over.</p>
+
+    <div class="day-filter" id="dayFilter">
+      <span class="label">Show</span>
+      <button data-range="all" class="active">Full week</button>
+      <button data-range="weekend">Weekend (Sat–Sun)</button>
+      <button data-range="weekdays">Weekdays (Mon–Thu)</button>
+      <button data-range="adults">Adults-only days</button>
+      <button data-range="vanguard">Vanguard day</button>
+    </div>
 
     <div class="legend">
-      <span><span class="legend-swatch" style="background:#F1E2CC;border-color:#E0CDB0;"></span>Adults</span>
-      <span><span class="legend-swatch" style="background:#E2EDD0;border-color:#C9DCAE;"></span>Kid-friendly</span>
-      <span><span class="legend-swatch" style="background:#DCE6F0;border-color:#BFD0E2;"></span>NYC</span>
-      <span><span class="legend-swatch" style="background:#EBD9D4;border-color:#DEC5BE;"></span>Westchester</span>
-      <span><span class="legend-swatch" style="background:#F5F1E5;border-color:#B7B5AC;"></span>Locked</span>
+      <span><span class="legend-swatch" style="background:var(--c-meal-bg);border-color:var(--c-meal);"></span>Meal</span>
+      <span><span class="legend-swatch" style="background:var(--c-spa-bg);border-color:var(--c-spa);"></span>Spa</span>
+      <span><span class="legend-swatch" style="background:var(--c-show-bg);border-color:var(--c-show);"></span>Show</span>
+      <span><span class="legend-swatch" style="background:var(--c-drinks-bg);border-color:var(--c-drinks);"></span>Drinks</span>
+      <span><span class="legend-swatch" style="background:var(--c-activity-bg);border-color:var(--c-activity);"></span>Activity</span>
+      <span><span class="legend-swatch" style="background:var(--c-kids-bg);border-color:var(--c-kids);"></span>Kid-friendly</span>
+      <span><span class="legend-swatch" style="background:var(--travel);border-color:var(--c-travel-color);"></span>Travel</span>
     </div>
 
-    <div class="week-grid" id="weekGrid">
+    <!-- CALENDAR VIEW -->
+    <div id="calendarView" class="calendar-wrap">
+      <div class="calendar" id="calendarGrid"></div>
+    </div>
 
-      <!-- FRIDAY 6/5 -->
-      <div class="day-column">
-        <div class="day-header">
-          <div class="day-name">Friday</div>
-          <div class="day-date">June 5</div>
-          <div class="day-note">Arrival — keep clear</div>
-        </div>
-        <div class="activity-list" id="day-fri" data-day="fri"></div>
-      </div>
+    <!-- LIST VIEW (hidden by default) -->
+    <div id="listView" style="display:none;">
+      <div class="week-grid" id="weekGrid"></div>
+    </div>
+  </section>
 
-      <!-- SATURDAY 6/6 -->
-      <div class="day-column">
-        <div class="day-header">
-          <div class="day-name">Saturday</div>
-          <div class="day-date">June 6</div>
-        </div>
-        <div class="activity-list" id="day-sat" data-day="sat"></div>
-      </div>
-
-      <!-- SUNDAY 6/7 -->
-      <div class="day-column">
-        <div class="day-header">
-          <div class="day-name">Sunday</div>
-          <div class="day-date">June 7</div>
-          <div class="day-note">Vanguard 8pm</div>
-        </div>
-        <div class="activity-list" id="day-sun" data-day="sun"></div>
-      </div>
-
-      <!-- MONDAY 6/8 -->
-      <div class="day-column">
-        <div class="day-header">
-          <div class="day-name">Monday</div>
-          <div class="day-date">June 8</div>
-          <div class="day-note">Stone Barns closed</div>
-        </div>
-        <div class="activity-list" id="day-mon" data-day="mon"></div>
-      </div>
-
-      <!-- TUESDAY 6/9 -->
-      <div class="day-column">
-        <div class="day-header">
-          <div class="day-name">Tuesday</div>
-          <div class="day-date">June 9</div>
-          <div class="day-note">Stone Barns closed</div>
-        </div>
-        <div class="activity-list" id="day-tue" data-day="tue"></div>
-      </div>
-
-      <!-- WEDNESDAY 6/10 -->
-      <div class="day-column">
-        <div class="day-header">
-          <div class="day-name">Wednesday</div>
-          <div class="day-date">June 10</div>
-        </div>
-        <div class="activity-list" id="day-wed" data-day="wed"></div>
-      </div>
-
-      <!-- THURSDAY 6/11 -->
-      <div class="day-column">
-        <div class="day-header">
-          <div class="day-name">Thursday</div>
-          <div class="day-date">June 11</div>
-        </div>
-        <div class="activity-list" id="day-thu" data-day="thu"></div>
-      </div>
-
-      <!-- POOL -->
-      <div class="pool-column">
-        <div class="day-header">
-          <div class="day-name">Candidates</div>
-          <div class="day-date">Swap In</div>
-          <div class="day-note">Alternatives to mix in</div>
-        </div>
-        <div class="activity-list" id="day-pool" data-day="pool"></div>
-      </div>
-
+  <section class="pool-section">
+    <p class="section-label">Swap pool</p>
+    <h2 style="margin-bottom:8px;">Candidates</h2>
+    <p style="font-size:13px;margin-bottom:12px;">Alternative activities not currently in the plan. Drag any of these into a day on the calendar, or click "+ Add" on any table row below to promote it here.</p>
+    <div class="day-column pool-column" style="min-height:auto;">
+      <div class="activity-list" id="day-pool" data-day="pool"></div>
     </div>
   </section>
 
@@ -510,11 +813,12 @@
   <section>
     <p class="section-label">Compare · Food</p>
     <h2>Restaurants</h2>
-    <p style="font-size:13px;">Both Duckbill's picks (highlighted gold) and Kit's picks (highlighted green) — sorted by relevance to this trip. Stone Barns is the trophy meal; everything else is supporting cast.</p>
+    <p style="font-size:13px;">Click <strong>+ Add</strong> on any row to push it into the Candidates pool. Duckbill picks highlighted gold; my top picks green.</p>
     <div class="table-wrap">
-      <table>
+      <table id="restaurantTable">
         <thead>
           <tr>
+            <th></th>
             <th>Spot</th>
             <th>★</th>
             <th>Neighborhood</th>
@@ -526,87 +830,96 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="kit-top">
+          <tr class="kit-top" data-activity-id="stone-barns">
+            <td><button class="row-add-btn" data-target="stone-barns">+ Add</button></td>
             <td><div class="name">Blue Hill at Stone Barns</div><div class="sub">tasting menu lunch or dinner</div></td>
             <td><span class="stars">★★</span></td>
             <td>Tarrytown · 15 min from lodging</td>
-            <td>Farm-to-table tasting, warm and immersive. Menu is improvised around what was harvested that morning. The farm <em>is</em> the menu.</td>
-            <td>$378+ lunch<br>$428+ dinner</td>
-            <td>Designed for it — built around dietary needs</td>
+            <td>Farm-to-table tasting, warm and immersive. Menu is improvised around what was harvested that morning.</td>
+            <td>$378+ lunch / $428+ dinner</td>
+            <td>Designed for it</td>
             <td>Doable but book early</td>
-            <td class="verdict">★ The trophy meal of the trip. Book first.</td>
+            <td class="verdict">★ The trophy meal of the trip. Book May 15.</td>
           </tr>
-          <tr class="duckbill">
-            <td><div class="name">Eleven Madison Park</div><div class="sub">Duckbill pick</div></td>
-            <td><span class="stars">★★★</span></td>
-            <td>Flatiron · ~1 hr from White Plains</td>
-            <td>Hushed, art-deco room, formal service. Fully plant-based from 2021–2025; Humm reintroduced selective proteins in 2025 (still no butter or cream). Service is unimpeachable — but the room is reverent, not celebratory.</td>
-            <td>$365 food, +$200–300 wine pairing</td>
-            <td>Designed to do full GF with notice</td>
-            <td>Hard 7-top</td>
-            <td class="verdict skip">Skip for this trip — Stone Barns is the better trophy meal for a group celebration. EMP is for a different kind of pilgrimage.</td>
-          </tr>
-          <tr class="kit-top">
+          <tr class="kit-top" data-activity-id="le-bernardin-lunch">
+            <td><button class="row-add-btn" data-target="le-bernardin-lunch">+ Add</button></td>
             <td><div class="name">Le Bernardin</div><div class="sub">closed Sundays · lunch Mon–Fri</div></td>
             <td><span class="stars">★★★</span></td>
             <td>Midtown West · ~1 hr from WP</td>
-            <td>Eric Ripert. Formal but warm, seafood-driven, hospitality is the opposite of EMP's reverence. Polished service that wants you to enjoy yourself.</td>
-            <td>$210 lunch prix fixe / $350–550 dinner tasting</td>
-            <td>Excellent — seafood-forward, easy to swap</td>
+            <td>Eric Ripert. Polished but warm — hospitality is the opposite of EMP's reverence.</td>
+            <td>$210 lunch / $350–550 dinner</td>
+            <td>Excellent — seafood-forward</td>
             <td>Easiest 3★ for 7-top</td>
-            <td class="verdict">★ The NYC 3★ pick. Lunch Tue 6/9 as the food-trophy companion to Stone Barns.</td>
+            <td class="verdict">★ NYC 3★ pick. Lunch Tue 6/9.</td>
           </tr>
-          <tr>
+          <tr class="duckbill" data-activity-id="emp">
+            <td><button class="row-add-btn" data-target="emp">+ Add</button></td>
+            <td><div class="name">Eleven Madison Park</div><div class="sub">Duckbill pick</div></td>
+            <td><span class="stars">★★★</span></td>
+            <td>Flatiron · ~1 hr from WP</td>
+            <td>Hushed art-deco room, formal. Fully plant-based 2021–2025; Humm reintroduced selective proteins in 2025 (still no butter/cream).</td>
+            <td>$365 + $200–300 pairing</td>
+            <td>Full GF with notice</td>
+            <td>Hard 7-top</td>
+            <td class="verdict skip">Skip — Stone Barns is better trophy meal for a celebration</td>
+          </tr>
+          <tr data-activity-id="jungsik">
+            <td><button class="row-add-btn" data-target="jungsik">+ Add</button></td>
             <td><div class="name">Jungsik</div></td>
             <td><span class="stars">★★★</span></td>
             <td>Tribeca · ~1 hr from WP</td>
-            <td>Modern Korean tasting. 2024 3★ promotion. Energy without being scene-y.</td>
+            <td>Modern Korean tasting. 2024 3★ promotion — first Korean in US. Energy without scene.</td>
             <td>$295 + $200 pairing</td>
-            <td>Confirmable with notice — rice-based</td>
-            <td>Achievable for 7-top</td>
-            <td class="verdict">Best 3★ "with energy" — alt trophy meal</td>
+            <td>Confirmable</td>
+            <td>Achievable</td>
+            <td class="verdict">Alt 3★ if you want a different cuisine vector</td>
           </tr>
-          <tr>
+          <tr data-activity-id="the-modern">
+            <td><button class="row-add-btn" data-target="the-modern">+ Add</button></td>
             <td><div class="name">The Modern</div><div class="sub">at MoMA</div></td>
             <td><span class="stars">★★</span></td>
             <td>Midtown</td>
-            <td>Sophisticated, light-filled, sculpture garden views.</td>
+            <td>Sophisticated, light, sculpture garden views.</td>
             <td>$178 lunch / $258 dinner</td>
             <td>Strong</td>
-            <td>Easy 7-top</td>
-            <td class="verdict">Best fine-dining lunch if you do a city day with adults</td>
+            <td>Easy</td>
+            <td class="verdict">Sunday lunch alt if you skip Tarrytown brunch</td>
           </tr>
-          <tr>
+          <tr data-activity-id="per-se">
+            <td><button class="row-add-btn" data-target="per-se">+ Add</button></td>
             <td><div class="name">Per Se</div></td>
             <td><span class="stars">★★★</span></td>
             <td>Columbus Circle</td>
-            <td>Most formal of the 3★s — classical French, jackets required.</td>
+            <td>Most formal of the 3★s. Classical French, jackets required.</td>
             <td>$420</td>
             <td>Yes with notice</td>
-            <td>Easy 7-top — big dining room</td>
-            <td class="verdict neutral">Doable but Le Bernardin or Jungsik beat it on every axis for this brief</td>
+            <td>Easy</td>
+            <td class="verdict neutral">Keller-skeptic disclaimer: probably skip</td>
           </tr>
-          <tr class="skip">
+          <tr class="skip" data-activity-id="atomix">
+            <td><button class="row-add-btn" data-target="atomix">+ Add</button></td>
             <td><div class="name">Atomix</div></td>
             <td><span class="stars">★★</span></td>
             <td>Rose Hill</td>
-            <td>Counter omakase. Intense Korean tasting.</td>
+            <td>Counter omakase — intense Korean tasting.</td>
             <td>$385 + $250 pairing</td>
             <td>Yes</td>
             <td>BRUTAL — 14-seat counter</td>
-            <td class="verdict skip">Skip — physically too small for 7</td>
+            <td class="verdict skip">Physically too small for 7</td>
           </tr>
-          <tr class="skip">
+          <tr class="skip" data-activity-id="cote">
+            <td><button class="row-add-btn" data-target="cote">+ Add</button></td>
             <td><div class="name">Cote (550 Madison)</div></td>
             <td><span class="stars">★</span></td>
             <td>Midtown East</td>
-            <td>Loud, scene-y Korean BBQ. Bro-friendly without being bro.</td>
-            <td>$200–300 with wine</td>
-            <td>Tricky — sauces, marinades, banchan</td>
+            <td>Loud, scene-y Korean BBQ.</td>
+            <td>$200–300 w/ wine</td>
+            <td>Tricky — sauces, marinades</td>
             <td>Doable</td>
-            <td class="verdict skip">Skip — GF logistics too messy with 3 GF in the group</td>
+            <td class="verdict skip">GF logistics too messy with 3 GF</td>
           </tr>
-          <tr>
+          <tr data-activity-id="le-coucou">
+            <td><button class="row-add-btn" data-target="le-coucou">+ Add</button></td>
             <td><div class="name">Le Coucou</div></td>
             <td><span class="stars">★</span></td>
             <td>Soho · ~1 hr from WP</td>
@@ -616,7 +929,8 @@
             <td>Doable</td>
             <td class="verdict">Strong NYC dinner if you want a non-tasting evening</td>
           </tr>
-          <tr>
+          <tr data-activity-id="frenchette">
+            <td><button class="row-add-btn" data-target="frenchette">+ Add</button></td>
             <td><div class="name">Frenchette</div></td>
             <td>—</td>
             <td>Tribeca · 5 min cab to Vanguard</td>
@@ -624,19 +938,21 @@
             <td>$90–120</td>
             <td>Strong</td>
             <td>Doable</td>
-            <td class="verdict">Sunday pre-Vanguard dinner if you don't want a full tasting</td>
+            <td class="verdict">Sunday pre-Vanguard dinner alt</td>
           </tr>
-          <tr>
+          <tr data-activity-id="carbone">
+            <td><button class="row-add-btn" data-target="carbone">+ Add</button></td>
             <td><div class="name">Carbone</div></td>
             <td><span class="stars">★</span></td>
             <td>Greenwich Village</td>
             <td>Big Italian American, scene, tableside theatrics.</td>
             <td>$150–200</td>
-            <td>Tricky — pasta-heavy menu</td>
-            <td>Hard to book at 7-top</td>
-            <td class="verdict neutral">Wildcard celebratory dinner if Jack would love it</td>
+            <td>Tricky — pasta-heavy</td>
+            <td>Hard at 7-top</td>
+            <td class="verdict neutral">Wildcard if Jack would love it</td>
           </tr>
-          <tr>
+          <tr data-activity-id="river-market">
+            <td><button class="row-add-btn" data-target="river-market-brunch">+ Add</button></td>
             <td><div class="name">RiverMarket</div></td>
             <td>—</td>
             <td>Tarrytown · 10 min from WP</td>
@@ -644,15 +960,16 @@
             <td>$30–50</td>
             <td>Strong</td>
             <td>Easy</td>
-            <td class="verdict">Best local "good casual" — kid-friendly, near lodging</td>
+            <td class="verdict">Best local "good casual" — kid-friendly</td>
           </tr>
-          <tr>
+          <tr data-activity-id="tarry-lodge">
+            <td><button class="row-add-btn" data-target="tarry-lodge-dinner">+ Add</button></td>
             <td><div class="name">Tarry Lodge</div></td>
             <td>—</td>
-            <td>Port Chester (Westchester)</td>
+            <td>Port Chester · 25 min from WP</td>
             <td>Mario Batali Italian. Group-friendly, lively.</td>
             <td>$50–80</td>
-            <td>Doable (notice for pasta swap)</td>
+            <td>Doable (pasta swaps)</td>
             <td>Easy</td>
             <td class="verdict">Local dinner option for a kid-inclusive night</td>
           </tr>
@@ -663,12 +980,13 @@
 
   <section>
     <p class="section-label">Compare · Drinks</p>
-    <h2>Bars & cocktails</h2>
-    <p style="font-size:13px;">Duckbill didn't cover bars. Here's the slate, mostly NYC with a few Westchester options.</p>
+    <h2>Bars &amp; cocktails</h2>
+    <p style="font-size:13px;">Duckbill didn't cover bars — all from me.</p>
     <div class="table-wrap">
-      <table>
+      <table id="barTable">
         <thead>
           <tr>
+            <th></th>
             <th>Spot</th>
             <th>Neighborhood</th>
             <th>Type</th>
@@ -679,95 +997,55 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="kit-top">
+          <tr class="kit-top" data-activity-id="employees-only">
+            <td><button class="row-add-btn" data-target="employees-only">+ Add</button></td>
             <td><div class="name">Employees Only</div></td>
             <td>West Village · 510 Hudson</td>
             <td>Speakeasy</td>
             <td>Historic NYC bar, lively, kitchen open late</td>
             <td>$18–22</td>
             <td>Tight but doable</td>
-            <td class="verdict">★ Post-Vanguard — around the corner from the club</td>
+            <td class="verdict">★ Post-Vanguard — around the corner</td>
           </tr>
-          <tr>
+          <tr data-activity-id="bemelmans">
+            <td><button class="row-add-btn" data-target="bemelmans">+ Add</button></td>
             <td><div class="name">Bemelmans Bar</div></td>
             <td>UES · The Carlyle</td>
             <td>Hotel piano bar</td>
-            <td>Iconic Ludwig Bemelmans murals, live piano/jazz</td>
+            <td>Iconic murals, live piano/jazz</td>
             <td>$25–30</td>
             <td>No res, tight</td>
-            <td class="verdict">Iconic NYC bar moment if you do an uptown day</td>
+            <td class="verdict">Iconic NYC bar moment</td>
           </tr>
-          <tr>
+          <tr data-activity-id="temple-bar">
+            <td><button class="row-add-btn" data-target="temple-bar">+ Add</button></td>
             <td><div class="name">Temple Bar</div></td>
             <td>NoHo</td>
             <td>Cocktail lounge</td>
-            <td>Dark, plush, classic. Restored downtown legend.</td>
+            <td>Dark, plush, restored downtown legend</td>
             <td>$22–25</td>
             <td>Doable</td>
-            <td class="verdict">Great for an adult-only night out</td>
+            <td class="verdict">Great adult-only night out</td>
           </tr>
-          <tr>
+          <tr data-activity-id="overstory">
+            <td><button class="row-add-btn" data-target="overstory">+ Add</button></td>
             <td><div class="name">Overstory</div></td>
-            <td>FiDi · rooftop at 70 Pine</td>
+            <td>FiDi rooftop · 70 Pine</td>
             <td>Rooftop cocktail</td>
-            <td>Scenic, scene-y, sunset-driven</td>
+            <td>Scenic, sunset-driven</td>
             <td>$24–28</td>
             <td>Doable, book ahead</td>
-            <td class="verdict">If you want a view-driven drink moment</td>
+            <td class="verdict">View-driven drink moment</td>
           </tr>
-          <tr>
-            <td><div class="name">Death &amp; Co</div></td>
-            <td>East Village</td>
-            <td>Craft cocktail temple</td>
-            <td>OG cocktail bar, no-frills, drink-forward</td>
-            <td>$20–22</td>
-            <td>Tight — small space</td>
-            <td class="verdict neutral">Cocktail-head pick — only if anyone's deep in the cocktail world</td>
-          </tr>
-          <tr>
-            <td><div class="name">Attaboy</div></td>
-            <td>LES</td>
-            <td>Craft cocktail (no menu)</td>
-            <td>Anonymous door, bespoke menu, intimate</td>
-            <td>$20–22</td>
-            <td>Tight</td>
-            <td class="verdict neutral">Same — only for cocktail people</td>
-          </tr>
-          <tr>
+          <tr data-activity-id="smalls">
+            <td><button class="row-add-btn" data-target="smalls">+ Add</button></td>
             <td><div class="name">Smalls</div></td>
             <td>West Village · 3 min walk to Vanguard</td>
             <td>Jazz club + bar</td>
-            <td>More casual jazz than Vanguard, drinks-first energy</td>
+            <td>Casual jazz, drinks-first energy</td>
             <td>$15–18 + cover</td>
             <td>Easy</td>
-            <td class="verdict">Add-on second jazz night if anyone wants another set</td>
-          </tr>
-          <tr>
-            <td><div class="name">The Long Island Bar</div></td>
-            <td>Cobble Hill, Brooklyn</td>
-            <td>Neighborhood gem</td>
-            <td>Beautiful old diner space, immaculate classics</td>
-            <td>$18–22</td>
-            <td>Tight, no res</td>
-            <td class="verdict neutral">Lovely but Brooklyn — only if you're already there</td>
-          </tr>
-          <tr>
-            <td><div class="name">Mr. Fong's</div></td>
-            <td>Chinatown</td>
-            <td>Dive-cool</td>
-            <td>Loud, late, fun, cocktails without seriousness</td>
-            <td>$14–18</td>
-            <td>Easy</td>
-            <td class="verdict neutral">If the night gets late and silly</td>
-          </tr>
-          <tr>
-            <td><div class="name">Birdsall House</div></td>
-            <td>Peekskill (Westchester) · 25 min from WP</td>
-            <td>Gastropub</td>
-            <td>Local craft beer + food, low-key</td>
-            <td>$10–15</td>
-            <td>Easy</td>
-            <td class="verdict">Westchester option for a low-key drink night</td>
+            <td class="verdict">Add-on jazz night for the heads</td>
           </tr>
         </tbody>
       </table>
@@ -777,11 +1055,12 @@
   <section>
     <p class="section-label">Compare · Spas</p>
     <h2>Spas</h2>
-    <p style="font-size:13px;">Jack loves sauna + cold plunge — that flips the spa pick away from Duckbill's "treatment room" options (Guerlain, ZZ, Nuansa) and toward thermal-circuit bathhouses.</p>
+    <p style="font-size:13px;">Jack loves sauna + cold plunge — flips the pick away from Duckbill's "treatment room" options toward thermal bathhouses.</p>
     <div class="table-wrap">
-      <table>
+      <table id="spaTable">
         <thead>
           <tr>
+            <th></th>
             <th>Spot</th>
             <th>Neighborhood</th>
             <th>Format</th>
@@ -792,77 +1071,75 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="kit-top">
+          <tr class="kit-top" data-activity-id="bathhouse">
+            <td><button class="row-add-btn" data-target="bathhouse">+ Add</button></td>
             <td><div class="name">Bathhouse Flatiron</div></td>
             <td>Flatiron · ~1 hr from WP</td>
-            <td>Thermal circuit + treatments — sauna, steam, hammam, cold plunge, pools, on-site bar</td>
+            <td>Thermal circuit + treatments — sauna, steam, hammam, cold plunge, pools, bar</td>
             <td>Designed for groups, mixed-gender</td>
-            <td>Brooklyn-cool, dim, social, drinks served</td>
-            <td>$200–360 (day pass + massage + scrub)</td>
-            <td class="verdict">★ Jack's exact register. Thermal hangout, drinks, real massages. Book 5–7 day passes for same window.</td>
+            <td>Brooklyn-cool, dim, social</td>
+            <td>$200–360 (pass + massage + scrub)</td>
+            <td class="verdict">★ Jack's exact register. Book Sun afternoon.</td>
           </tr>
-          <tr>
+          <tr data-activity-id="bathhouse-wburg">
+            <td><button class="row-add-btn" data-target="bathhouse-wburg">+ Add</button></td>
             <td><div class="name">Bathhouse Williamsburg</div></td>
             <td>Williamsburg, Brooklyn</td>
-            <td>Same as Flatiron, larger facility</td>
+            <td>Same as Flatiron, bigger facility</td>
             <td>Excellent</td>
-            <td>Same — more thermal pools, prettier room</td>
+            <td>More thermal pools, prettier room</td>
             <td>$200–360</td>
-            <td class="verdict">Same offering — pick by which side of the river fits your day</td>
+            <td class="verdict">Alt if you want Brooklyn-side</td>
           </tr>
-          <tr>
+          <tr data-activity-id="world-spa">
+            <td><button class="row-add-btn" data-target="world-spa">+ Add</button></td>
             <td><div class="name">World Spa</div></td>
             <td>Midwood, Brooklyn · ~1.5 hr from WP</td>
-            <td>Full thermal — Russian banya, Finnish saunas, Turkish/Moroccan hammams, Japanese onsen</td>
-            <td>Excellent — 50,000 sq ft</td>
-            <td>Authentic Eastern-European banya energy, older crowd</td>
+            <td>Full thermal — banya, hammams, onsen</td>
+            <td>Excellent — 50K sq ft</td>
+            <td>Authentic Eastern-European banya</td>
             <td>$250–400</td>
-            <td class="verdict">The "real" bathhouse experience — but the Brooklyn schlep from WP is real</td>
+            <td class="verdict">The "real" bathhouse — Brooklyn schlep</td>
           </tr>
-          <tr class="skip">
-            <td><div class="name">Aire Ancient Baths</div></td>
-            <td>Tribeca</td>
-            <td>Candlelit thermal baths in a historic factory</td>
-            <td>Allows groups but vibe is couple-y</td>
-            <td>Romantic-cinematic, whispered</td>
-            <td>$300–450</td>
-            <td class="verdict skip">Wrong vibe for 7 — better for couples</td>
-          </tr>
-          <tr>
+          <tr data-activity-id="othership">
+            <td><button class="row-add-btn" data-target="othership">+ Add</button></td>
             <td><div class="name">Othership</div></td>
             <td>Flatiron / Williamsburg</td>
-            <td>Guided 75-min sauna+ice classes (cohort-based)</td>
-            <td>Easy — just book 7 spots in one class</td>
+            <td>Guided 75-min sauna+ice classes</td>
+            <td>Easy — book 7 spots in one class</td>
             <td>Wellness-bro, modern, group-fitness energy</td>
             <td>$60–75</td>
-            <td class="verdict">Pre-Bathhouse add-on or standalone short session — fits Jack's profile too</td>
+            <td class="verdict">Pre-Bathhouse warmup or standalone session</td>
           </tr>
-          <tr class="duckbill">
-            <td><div class="name">Guerlain Wellness Spa</div><div class="sub">Duckbill pick</div></td>
+          <tr class="duckbill skip" data-activity-id="guerlain">
+            <td><button class="row-add-btn" data-target="guerlain">+ Add</button></td>
+            <td><div class="name">Guerlain Wellness</div><div class="sub">Duckbill pick</div></td>
             <td>Waldorf Astoria, Midtown East</td>
             <td>Treatment rooms — massages, facials</td>
-            <td>Doable but separated into individual rooms</td>
-            <td>Hotel-luxury, polished, formal</td>
+            <td>Separated into rooms</td>
+            <td>Hotel-luxury, formal</td>
             <td>$320–500</td>
-            <td class="verdict skip">Wrong format — Jack wants thermal hangout, not 80-min in a private room</td>
+            <td class="verdict skip">Wrong format — Jack wants thermal hangout</td>
           </tr>
-          <tr class="duckbill skip">
+          <tr class="duckbill skip" data-activity-id="zz">
+            <td><button class="row-add-btn" data-target="zz">+ Add</button></td>
             <td><div class="name">ZZ Day Spa</div><div class="sub">Duckbill pick</div></td>
             <td>Midtown</td>
-            <td>Spa party packages — massages, manicures, etc</td>
+            <td>Spa party packages</td>
             <td>Group-optimized</td>
-            <td>Bachelorette-energy — fluorescent, busy</td>
+            <td>Bachelorette-energy</td>
             <td>$190–255</td>
-            <td class="verdict skip">Wrong register entirely for this group</td>
+            <td class="verdict skip">Wrong register entirely</td>
           </tr>
-          <tr class="duckbill skip">
+          <tr class="duckbill skip" data-activity-id="nuansa">
+            <td><button class="row-add-btn" data-target="nuansa">+ Add</button></td>
             <td><div class="name">Nuansa Spa</div><div class="sub">Duckbill pick</div></td>
             <td>Fifth Avenue</td>
-            <td>Treatment rooms, Indonesian-style</td>
+            <td>Treatment rooms, Indonesian</td>
             <td>OK for small groups</td>
-            <td>Boutique, serene, quiet</td>
+            <td>Boutique, serene</td>
             <td>$220–280</td>
-            <td class="verdict skip">Wrong format — same problem as Guerlain, less luxe</td>
+            <td class="verdict skip">Wrong format</td>
           </tr>
         </tbody>
       </table>
@@ -870,181 +1147,386 @@
   </section>
 
   <footer>
-    <p>Built for Alex · last updated 2026-05-11 · saves to localStorage in this browser</p>
+    <p>Jackhattan · built for Alex · live at <a href="https://prjcts.alxprst.co/jack-bday-nyc/">prjcts.alxprst.co/jack-bday-nyc</a></p>
+    <p style="font-size:11px;color:var(--text-light);margin-top:8px;">Plan state syncs live via Firebase to everyone with the link. Local fallback if offline.</p>
   </footer>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script>
-// ===== Activity library =====
-// Each activity is a self-contained card with metadata. Defaults seed the week;
-// pool holds the alternates.
+<div class="offline-banner" id="offlineBanner">You're offline — changes won't sync until you reconnect</div>
+<div class="toast" id="toast"></div>
 
+<!-- Sortable -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/12.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.0/firebase-database-compat.js"></script>
+
+<script>
+/* ============================================================
+   ACTIVITY LIBRARY
+   ============================================================ */
 const ACTIVITIES = {
   // ----- LOCKED -----
   'arrive': {
     locked: true,
-    time: 'All day',
+    kind: 'activity',
     title: 'Arrival in White Plains',
-    detail: "Settle in with kids. Low-key dinner — pizza, takeout, kitchen night with Betsy &amp; Ken.",
-    tags: ['kids', 'west']
+    detail: 'Settle in with kids. Low-key dinner — pizza, takeout, kitchen night.',
+    defaultStart: '17:00',
+    duration: 240,
+    tags: ['kids','west']
   },
   'vanguard': {
     locked: true,
-    time: '8:00 pm',
+    kind: 'show',
     title: 'Kurt Rosenwinkel Quintet @ Village Vanguard',
-    detail: "GA seating, arrive 7:30. Set runs ~75–90 min. Out by 9:30–10pm.",
-    tags: ['adults', 'city'],
+    detail: 'GA seating, arrive 7:30. Set runs ~75–90 min.',
+    defaultStart: '20:00',
+    duration: 105,
+    travelFromWP: 75,
+    tags: ['adults','city'],
     booking: 'Tickets in hand (Miranda)'
   },
 
   // ----- HEADLINE EXPERIENCES -----
   'stone-barns': {
-    time: 'Lunch · 12pm',
+    kind: 'meal',
     title: 'Blue Hill at Stone Barns',
-    detail: "3-hour tasting menu, $378+/pp. 15 min from lodging. Trophy meal of the trip. Improvised menu — handles GF flawlessly.",
-    tags: ['adults', 'west'],
-    booking: 'Book on Resy — Wed 6/10 or Thu 6/11 (closed Mon/Tue)'
+    detail: '3-hour tasting menu, $378+/pp. 15 min from lodging. Trophy meal of the trip.',
+    defaultStart: '12:00',
+    duration: 195,
+    travelFromWP: 15,
+    tags: ['adults','west'],
+    booking: 'Resy opens May 15 (30-day window) — Wed 6/10 or Thu 6/11'
   },
   'bathhouse': {
-    time: 'Afternoon · 2-5:30pm',
+    kind: 'spa',
     title: 'Bathhouse Flatiron',
-    detail: "Thermal circuit + massages + hammam scrubs. Drinks at on-site bar. ~$200-300/pp.",
-    tags: ['adults', 'city'],
+    detail: 'Thermal circuit + massages + hammam scrubs. ~$200–300/pp.',
+    defaultStart: '14:30',
+    duration: 180,
+    travelFromWP: 75,
+    tags: ['adults','city'],
     booking: 'Book 7 day passes online, ~2 weeks out'
+  },
+  'bathhouse-wburg': {
+    kind: 'spa',
+    title: 'Bathhouse Williamsburg',
+    detail: 'Same offerings as Flatiron, larger facility. ~$200–360/pp.',
+    defaultStart: '14:00',
+    duration: 180,
+    travelFromWP: 90,
+    tags: ['adults','city'],
+    booking: 'Book 7 day passes online'
+  },
+  'world-spa': {
+    kind: 'spa',
+    title: 'World Spa',
+    detail: 'Full multi-cultural thermal experience. Brooklyn — 1.5 hr drive from WP.',
+    defaultStart: '12:00',
+    duration: 240,
+    travelFromWP: 90,
+    tags: ['adults','city']
+  },
+  'othership': {
+    kind: 'spa',
+    title: 'Othership 75-min session',
+    detail: 'Guided sauna + cold plunge class. ~$60–75/pp.',
+    defaultStart: '11:00',
+    duration: 75,
+    travelFromWP: 75,
+    tags: ['adults','city']
   },
 
   // ----- WESTCHESTER / HUDSON VALLEY -----
   'tarrytown': {
-    time: 'Day',
+    kind: 'activity',
     title: 'Tarrytown & Sleepy Hollow wander',
-    detail: "Walk Main Street, visit Lyndhurst or Kykuit Rockefeller Estate, ice cream, low-key. Kid-friendly.",
-    tags: ['kids', 'west']
+    detail: 'Walk Main Street, visit Lyndhurst or Kykuit. Kid-friendly.',
+    defaultStart: '11:00',
+    duration: 240,
+    travelFromWP: 15,
+    tags: ['kids','west']
   },
   'dia-beacon': {
-    time: 'Day',
+    kind: 'activity',
     title: 'Dia:Beacon',
-    detail: "Massive contemporary art museum in a former Nabisco printing factory. ~45 min drive. Kids tolerate, adults love.",
-    tags: ['kids', 'west']
+    detail: 'Massive contemporary art museum. ~45 min drive.',
+    defaultStart: '11:00',
+    duration: 300,
+    travelFromWP: 45,
+    tags: ['kids','west']
   },
   'storm-king': {
-    time: 'Day',
+    kind: 'activity',
     title: 'Storm King Art Center',
-    detail: "500-acre outdoor sculpture park. ~1 hr drive. Big skies, picnic vibes, kids can run.",
-    tags: ['kids', 'west']
+    detail: '500-acre outdoor sculpture park. ~1 hr drive.',
+    defaultStart: '11:00',
+    duration: 240,
+    travelFromWP: 60,
+    tags: ['kids','west']
   },
   'cold-spring': {
-    time: 'Day',
+    kind: 'activity',
     title: 'Cold Spring day trip',
-    detail: "Adorable Hudson River town. Antique shops, riverside walk, lunch at Hudson Hil's. ~30 min drive.",
-    tags: ['kids', 'west']
+    detail: 'Adorable Hudson River town. Antique shops, lunch at Hudson Hil\'s. ~30 min.',
+    defaultStart: '11:00',
+    duration: 300,
+    travelFromWP: 30,
+    tags: ['kids','west']
   },
   'rye-playland': {
-    time: 'Day',
+    kind: 'activity',
     title: 'Rye Playland',
-    detail: "Historic kid-friendly amusement park on Long Island Sound. ~20 min drive. Pure kid moment.",
-    tags: ['kids', 'west']
+    detail: 'Historic kid-friendly amusement park. ~20 min.',
+    defaultStart: '11:00',
+    duration: 240,
+    travelFromWP: 20,
+    tags: ['kids','west']
   },
   'bronx-zoo': {
-    time: 'Day',
+    kind: 'activity',
     title: 'Bronx Zoo',
-    detail: "World-class zoo, 40 min drive. Kid-magnet day. Bring sunscreen.",
-    tags: ['kids', 'west']
+    detail: 'World-class zoo, ~40 min drive.',
+    defaultStart: '10:00',
+    duration: 300,
+    travelFromWP: 40,
+    tags: ['kids','west']
   },
   'wp-pool-day': {
-    time: 'Day',
+    kind: 'kids',
     title: 'WP pool / park day',
-    detail: "Low-key day at Betsy & Ken's or local park/pool. Kids decompress, adults breathe.",
-    tags: ['kids', 'west']
+    detail: 'Low-key day at Betsy & Ken\'s or local park/pool.',
+    defaultStart: '10:00',
+    duration: 360,
+    travelFromWP: 0,
+    tags: ['kids','west']
   },
   'river-market-brunch': {
-    time: 'Brunch · 10am',
+    kind: 'meal',
     title: 'Brunch at RiverMarket',
-    detail: "Tarrytown · 10 min from lodging. Farm-to-table, GF-friendly, kid-friendly. Easy start.",
-    tags: ['kids', 'west'],
+    detail: 'Tarrytown · 10 min from lodging. Farm-to-table, GF-friendly, kid-friendly.',
+    defaultStart: '10:00',
+    duration: 90,
+    travelFromWP: 10,
+    tags: ['kids','west'],
     booking: 'OpenTable'
   },
 
-  // ----- NYC ADULT DAY -----
+  // ----- NYC ADULT -----
   'whitney': {
-    time: 'Afternoon',
+    kind: 'activity',
     title: 'Whitney Museum',
-    detail: "Meatpacking District. Walk High Line after. Walkable to West Village dinner spots.",
-    tags: ['adults', 'city']
+    detail: 'Meatpacking · walk High Line after. Walkable to West Village.',
+    defaultStart: '15:00',
+    duration: 120,
+    travelFromWP: 60,
+    tags: ['adults','city']
   },
   'moma': {
-    time: 'Afternoon',
+    kind: 'activity',
     title: 'MoMA',
-    detail: "Midtown. Pair with lunch at The Modern (in-museum 2★).",
-    tags: ['adults', 'city']
+    detail: 'Midtown. Pair with lunch at The Modern (in-museum 2★).',
+    defaultStart: '14:00',
+    duration: 150,
+    travelFromWP: 60,
+    tags: ['adults','city']
   },
   'nyc-walk-drinks': {
-    time: 'Afternoon',
+    kind: 'drinks',
     title: 'NYC walk + drinks',
-    detail: "High Line → Hudson Yards → drinks at Overstory rooftop or Bemelmans uptown.",
-    tags: ['adults', 'city']
+    detail: 'High Line → Hudson Yards → Overstory or Bemelmans.',
+    defaultStart: '16:00',
+    duration: 150,
+    travelFromWP: 60,
+    tags: ['adults','city']
   },
 
-  // ----- DINNER OPTIONS -----
-  'frenchette-dinner': {
-    time: 'Dinner · 5:30pm',
-    title: 'Dinner at Frenchette',
-    detail: "Tribeca. French bistro, GF-friendly. 5-min cab to Vanguard.",
-    tags: ['adults', 'city'],
-    booking: 'Resy 30 days out'
-  },
+  // ----- DINNERS / LUNCHES -----
   'le-bernardin-lunch': {
-    time: 'Lunch · 12:30pm',
-    title: 'Lunch at Le Bernardin',
-    detail: "Midtown · 3★. 4-course prix fixe ~$210/pp. Eric Ripert, seafood-forward, polished but warm. <strong>Closed Sundays</strong> — must be a weekday lunch (Mon-Fri 12-2:30pm).",
-    tags: ['adults', 'city'],
-    booking: 'Resy on the 1st of each month for the following month'
+    kind: 'meal',
+    title: 'Le Bernardin lunch',
+    detail: 'Midtown · 3★. 4-course prix fixe ~$210/pp. Closed Sundays.',
+    defaultStart: '12:30',
+    duration: 150,
+    travelFromWP: 75,
+    tags: ['adults','city'],
+    booking: 'Resy 1st-of-month drop for following month'
+  },
+  'emp': {
+    kind: 'meal',
+    title: 'Eleven Madison Park',
+    detail: '3★. Selective proteins back as of 2025. Hushed, formal.',
+    defaultStart: '18:00',
+    duration: 210,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'jungsik': {
+    kind: 'meal',
+    title: 'Jungsik',
+    detail: '3★ modern Korean tasting. Tribeca.',
+    defaultStart: '18:30',
+    duration: 180,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'per-se': {
+    kind: 'meal',
+    title: 'Per Se',
+    detail: '3★ classical French. Jackets required.',
+    defaultStart: '18:00',
+    duration: 195,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'atomix': {
+    kind: 'meal',
+    title: 'Atomix',
+    detail: '2★ counter omakase. 14 seats — 7-top brutal.',
+    defaultStart: '18:00',
+    duration: 165,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'cote': {
+    kind: 'meal',
+    title: 'Cote',
+    detail: '1★ Korean BBQ. Loud, scene-y.',
+    defaultStart: '19:00',
+    duration: 150,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'le-coucou': {
+    kind: 'meal',
+    title: 'Le Coucou',
+    detail: '1★ French. Soho. Beautiful room.',
+    defaultStart: '18:30',
+    duration: 150,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'frenchette': {
+    kind: 'meal',
+    title: 'Frenchette',
+    detail: 'French bistro, Tribeca. 5-min cab to Vanguard.',
+    defaultStart: '17:30',
+    duration: 105,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'carbone': {
+    kind: 'meal',
+    title: 'Carbone',
+    detail: '1★ Italian-American scene. Tough 7-top.',
+    defaultStart: '19:00',
+    duration: 150,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'the-modern': {
+    kind: 'meal',
+    title: 'The Modern',
+    detail: '2★ at MoMA. Sophisticated, light room.',
+    defaultStart: '12:30',
+    duration: 120,
+    travelFromWP: 75,
+    tags: ['adults','city']
   },
   'tarry-lodge-dinner': {
-    time: 'Dinner',
+    kind: 'meal',
     title: 'Dinner at Tarry Lodge',
-    detail: "Port Chester · 25 min from WP. Mario Batali Italian, kid-friendly, group-friendly.",
-    tags: ['kids', 'west'],
+    detail: 'Port Chester · 25 min from WP. Italian, group-friendly, kid-friendly.',
+    defaultStart: '18:30',
+    duration: 90,
+    travelFromWP: 25,
+    tags: ['kids','west'],
     booking: 'OpenTable'
   },
   'pre-vanguard-snacks': {
-    time: 'Pre-show · 6:30pm',
+    kind: 'meal',
     title: 'Light bites near Vanguard',
-    detail: "Buvette (French wine bar), Wallflower (cocktails + small plates), or oysters at The Long Island Bar. Keep it light.",
-    tags: ['adults', 'city']
+    detail: 'Buvette (French wine bar), Wallflower, or oysters at The Long Island Bar.',
+    defaultStart: '18:30',
+    duration: 75,
+    travelFromWP: 75,
+    tags: ['adults','city']
   },
 
-  // ----- POST-VANGUARD -----
+  // ----- DRINKS -----
   'employees-only': {
-    time: 'Late · 10pm',
+    kind: 'drinks',
     title: 'Drinks at Employees Only',
-    detail: "Around the corner from Vanguard at 510 Hudson. Speakeasy, food till late, lively. Perfect cool-down.",
-    tags: ['adults', 'city']
-  },
-
-  // ----- ADD-ONS -----
-  'othership': {
-    time: '75-min session',
-    title: 'Othership sauna+ice class',
-    detail: "Guided sauna + cold plunge class. $60-75/pp. Pre-Bathhouse warmup or standalone short session.",
-    tags: ['adults', 'city']
-  },
-  'smalls-jazz': {
-    time: 'Late',
-    title: 'Second jazz night at Smalls',
-    detail: "Less reverent than Vanguard, drinks-first. 3-min walk from Vanguard. For the heads.",
-    tags: ['adults', 'city']
+    detail: 'Around the corner from Vanguard. Speakeasy, food till late.',
+    defaultStart: '22:00',
+    duration: 90,
+    travelFromWP: 75,
+    tags: ['adults','city']
   },
   'bemelmans': {
-    time: 'Evening',
+    kind: 'drinks',
     title: 'Cocktails at Bemelmans',
-    detail: "UES · The Carlyle. Live piano/jazz, iconic. Dress up a little.",
-    tags: ['adults', 'city']
+    detail: 'UES · The Carlyle. Live piano/jazz, iconic.',
+    defaultStart: '18:00',
+    duration: 90,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'temple-bar': {
+    kind: 'drinks',
+    title: 'Drinks at Temple Bar',
+    detail: 'NoHo · dark, plush cocktail lounge.',
+    defaultStart: '20:00',
+    duration: 90,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'overstory': {
+    kind: 'drinks',
+    title: 'Drinks at Overstory',
+    detail: 'FiDi rooftop. Sunset-driven.',
+    defaultStart: '18:30',
+    duration: 75,
+    travelFromWP: 75,
+    tags: ['adults','city']
+  },
+  'smalls': {
+    kind: 'drinks',
+    title: 'Smalls jazz set',
+    detail: 'West Village · 3 min walk to Vanguard. Casual jazz.',
+    defaultStart: '22:30',
+    duration: 75,
+    travelFromWP: 75,
+    tags: ['adults','city']
   }
 };
 
-// ===== Default plan =====
+/* ============================================================
+   DAYS
+   ============================================================ */
+const DAYS = [
+  { id: 'fri', name: 'Friday',    date: 'June 5',  shortDate: '6/5',  note: 'Arrival — keep clear', tag: 'family', tagLabel: 'Family' },
+  { id: 'sat', name: 'Saturday',  date: 'June 6',  shortDate: '6/6',  note: '', tag: 'family', tagLabel: 'Family' },
+  { id: 'sun', name: 'Sunday',    date: 'June 7',  shortDate: '6/7',  note: 'Vanguard 8pm · Jack\'s bday', tag: 'adults', tagLabel: '5 adults + B&K eve' },
+  { id: 'mon', name: 'Monday',    date: 'June 8',  shortDate: '6/8',  note: 'Stone Barns closed', tag: 'family', tagLabel: 'Family' },
+  { id: 'tue', name: 'Tuesday',   date: 'June 9',  shortDate: '6/9',  note: 'Stone Barns closed', tag: 'mixed', tagLabel: 'Mixed' },
+  { id: 'wed', name: 'Wednesday', date: 'June 10', shortDate: '6/10', note: '', tag: 'adults', tagLabel: 'Adults' },
+  { id: 'thu', name: 'Thursday',  date: 'June 11', shortDate: '6/11', note: '', tag: 'family', tagLabel: 'Family' }
+];
+
+const DAY_FILTER_PRESETS = {
+  all: ['fri','sat','sun','mon','tue','wed','thu'],
+  weekend: ['sat','sun'],
+  weekdays: ['mon','tue','wed','thu'],
+  adults: ['sun','wed'],
+  vanguard: ['sun']
+};
+
+/* ============================================================
+   DEFAULT PLAN
+   ============================================================ */
 const DEFAULT_PLAN = {
   fri: ['arrive'],
   sat: ['tarrytown', 'tarry-lodge-dinner'],
@@ -1053,94 +1535,652 @@ const DEFAULT_PLAN = {
   tue: ['le-bernardin-lunch', 'whitney', 'bemelmans'],
   wed: ['stone-barns'],
   thu: ['dia-beacon'],
-  pool: ['storm-king', 'cold-spring', 'rye-playland', 'bronx-zoo', 'frenchette-dinner', 'moma', 'othership', 'smalls-jazz', 'nyc-walk-drinks']
+  pool: ['storm-king','cold-spring','rye-playland','bronx-zoo','frenchette','moma','othership','smalls','nyc-walk-drinks','temple-bar','overstory']
 };
 
-// ===== Rendering =====
+/* ============================================================
+   STATE
+   ============================================================ */
+const LS_KEY = 'jackhattan-plan-v1';
+const LS_USER_KEY = 'jackhattan-user';
+const FB_NAMESPACE = 'jack-bday';
+
+let plan = loadLocalPlan();
+let currentView = 'calendar';
+let visibleDays = DAY_FILTER_PRESETS.all.slice();
+let currentUser = null;
+let presenceUsers = {};
+let firebaseReady = false;
+let db = null;
+
+function loadLocalPlan() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return JSON.parse(JSON.stringify(DEFAULT_PLAN));
+    return JSON.parse(raw);
+  } catch (e) {
+    return JSON.parse(JSON.stringify(DEFAULT_PLAN));
+  }
+}
+function saveLocalPlan() {
+  localStorage.setItem(LS_KEY, JSON.stringify(plan));
+}
+
+/* ============================================================
+   FIREBASE
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyCBEawEzVhdztWbYnJfc1R9qEe8zvvFyAE",
+  authDomain: "stoweaways-2026.firebaseapp.com",
+  databaseURL: "https://stoweaways-2026-default-rtdb.firebaseio.com",
+  projectId: "stoweaways-2026",
+  storageBucket: "stoweaways-2026.firebasestorage.app",
+  messagingSenderId: "480201563934",
+  appId: "1:480201563934:web:1010e6e1206954870bf30f"
+};
+
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.database();
+  firebaseReady = true;
+} catch (e) {
+  console.warn('Firebase failed to init:', e);
+}
+
+function updateSyncStatus(state, label) {
+  const el = document.getElementById('syncStatus');
+  const labelEl = document.getElementById('syncStatusText');
+  el.classList.remove('live','offline');
+  if (state === 'live') el.classList.add('live');
+  if (state === 'offline') el.classList.add('offline');
+  labelEl.textContent = label;
+}
+
+if (firebaseReady) {
+  db.ref('.info/connected').on('value', snap => {
+    const connected = snap.val() === true;
+    const banner = document.getElementById('offlineBanner');
+    if (connected) {
+      updateSyncStatus('live', 'live');
+      banner.classList.remove('visible');
+    } else {
+      updateSyncStatus('offline', 'offline');
+      banner.classList.add('visible');
+    }
+  });
+}
+
+/* ============================================================
+   USER IDENTITY + PRESENCE
+   ============================================================ */
+function loadOrCreateUser() {
+  try {
+    const stored = localStorage.getItem(LS_USER_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch (e) {}
+  const u = {
+    uid: 'u-' + Math.random().toString(36).slice(2, 10),
+    name: '',
+    color: pickColor()
+  };
+  localStorage.setItem(LS_USER_KEY, JSON.stringify(u));
+  return u;
+}
+function saveUser() {
+  localStorage.setItem(LS_USER_KEY, JSON.stringify(currentUser));
+}
+function pickColor() {
+  const palette = ['#BC5215','#879A39','#4385BE','#CE5D97','#8B7EC8','#DA702C','#3AA99F','#D0A215'];
+  return palette[Math.floor(Math.random()*palette.length)];
+}
+
+currentUser = loadOrCreateUser();
+document.getElementById('userNameInput').value = currentUser.name || '';
+document.getElementById('userNameInput').addEventListener('input', e => {
+  currentUser.name = e.target.value.trim().slice(0,24);
+  saveUser();
+  publishPresence();
+});
+
+function publishPresence() {
+  if (!firebaseReady || !currentUser) return;
+  const ref = db.ref(`${FB_NAMESPACE}/users/${currentUser.uid}`);
+  ref.set({
+    name: currentUser.name || 'anon',
+    color: currentUser.color,
+    lastSeen: Date.now()
+  });
+  ref.onDisconnect().remove();
+}
+function subscribePresence() {
+  if (!firebaseReady) return;
+  db.ref(`${FB_NAMESPACE}/users`).on('value', snap => {
+    presenceUsers = snap.val() || {};
+    renderPresence();
+  });
+}
+function renderPresence() {
+  const list = document.getElementById('presenceList');
+  const others = Object.entries(presenceUsers)
+    .filter(([uid]) => uid !== currentUser.uid)
+    .slice(0, 6);
+  list.innerHTML = `
+    <span class="avatar you" style="background:${currentUser.color};" title="${currentUser.name || 'You'}">${initials(currentUser.name || 'You')}</span>
+    ${others.map(([uid,u]) => `<span class="avatar small" style="background:${u.color || '#999'};color:white;" title="${u.name}">${initials(u.name)}</span>`).join('')}
+    ${Object.keys(presenceUsers).length > 7 ? `<span style="font-size:11px;color:var(--text-light);margin-left:4px;">+${Object.keys(presenceUsers).length - 7}</span>` : ''}
+  `;
+}
+function initials(name) {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0,2);
+  return (parts[0][0] + parts[parts.length-1][0]);
+}
+
+if (firebaseReady) {
+  publishPresence();
+  subscribePresence();
+  setInterval(publishPresence, 30000);
+}
+
+/* ============================================================
+   PLAN SYNC
+   ============================================================ */
+let suppressSyncForMs = 0;
+function pushPlanToFirebase() {
+  if (!firebaseReady) return;
+  suppressSyncForMs = Date.now() + 800;
+  db.ref(`${FB_NAMESPACE}/plan`).set({
+    state: plan,
+    updatedBy: currentUser.uid,
+    updatedByName: currentUser.name || 'anon',
+    updatedAt: Date.now()
+  });
+}
+function subscribePlan() {
+  if (!firebaseReady) return;
+  db.ref(`${FB_NAMESPACE}/plan`).on('value', snap => {
+    const val = snap.val();
+    if (!val || !val.state) return;
+    if (Date.now() < suppressSyncForMs) return; // ignore echo of own write
+    if (val.updatedBy === currentUser.uid) return;
+    plan = val.state;
+    saveLocalPlan();
+    render();
+    if (val.updatedByName) toast(`${val.updatedByName} updated the plan`);
+  });
+}
+if (firebaseReady) subscribePlan();
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('visible'), 2400);
+}
+
+/* ============================================================
+   ACTIVITY ↔ SCHEDULED INSTANCE
+   - Plan stores activity IDs per day (simple model)
+   - Time/duration come from ACTIVITIES[id] defaults
+   - User overrides stored at plan._overrides[`${day}:${id}`] = {start, duration}
+   ============================================================ */
+function getOverride(day, id) {
+  if (!plan._overrides) return null;
+  return plan._overrides[`${day}:${id}`] || null;
+}
+function setOverride(day, id, ov) {
+  if (!plan._overrides) plan._overrides = {};
+  plan._overrides[`${day}:${id}`] = ov;
+}
+function clearOverride(day, id) {
+  if (!plan._overrides) return;
+  delete plan._overrides[`${day}:${id}`];
+}
+function getStart(day, id) {
+  const ov = getOverride(day, id);
+  if (ov && ov.start) return ov.start;
+  return ACTIVITIES[id]?.defaultStart || '12:00';
+}
+function getDuration(day, id) {
+  const ov = getOverride(day, id);
+  if (ov && ov.duration) return ov.duration;
+  return ACTIVITIES[id]?.duration || 60;
+}
+
+/* ============================================================
+   TIME UTILS
+   ============================================================ */
+const CAL_START_HOUR = 8;
+const CAL_END_HOUR = 24;
+const PX_PER_MIN = 1;
+
+function timeToMinutes(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+function minutesToTime(m) {
+  const h = Math.floor(m / 60);
+  const mm = m % 60;
+  return `${String(h).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+}
+function formatTime(t) {
+  const [h, m] = t.split(':').map(Number);
+  const period = h >= 12 ? 'pm' : 'am';
+  const h12 = h % 12 || 12;
+  if (m === 0) return `${h12}${period}`;
+  return `${h12}:${String(m).padStart(2,'0')}${period}`;
+}
+function endTime(start, duration) {
+  return minutesToTime(timeToMinutes(start) + duration);
+}
+
+/* ============================================================
+   RENDER — CALENDAR VIEW
+   ============================================================ */
+function renderCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  const days = DAYS.filter(d => visibleDays.includes(d.id));
+  grid.style.setProperty('--day-count', days.length);
+  const hours = [];
+  for (let h = CAL_START_HOUR; h < CAL_END_HOUR; h++) hours.push(h);
+
+  let html = '';
+  // Top-left corner
+  html += '<div class="cal-corner"></div>';
+  // Day headers
+  for (const d of days) {
+    const tagClass = d.tag === 'adults' ? 'adults' : (d.tag === 'mixed' ? 'mixed' : 'family');
+    const noteClass = d.note ? '' : '';
+    const noteHtml = d.note ? `<div class="day-tag locked" style="margin-top:4px;font-style:italic;background:transparent;border:none;color:var(--accent);padding:0;">${d.note}</div>` : '';
+    html += `
+      <div class="cal-day-head">
+        <div class="day-name">${d.name}</div>
+        <div class="day-date">${d.date}</div>
+        <div class="day-tag ${tagClass}">${d.tagLabel}</div>
+        ${noteHtml}
+      </div>
+    `;
+  }
+  // Hour rows
+  for (const h of hours) {
+    const period = h >= 12 ? 'pm' : 'am';
+    const h12 = h % 12 || 12;
+    html += `<div class="cal-hour-label">${h12}${period}</div>`;
+    for (const d of days) {
+      html += `<div class="cal-day-col hour-cell" data-day="${d.id}" data-hour="${h}"></div>`;
+    }
+  }
+
+  grid.innerHTML = html;
+
+  // After grid is laid out, render events as absolute-positioned blocks per day col
+  for (const d of days) {
+    renderEventsForDay(d.id);
+  }
+}
+
+function renderEventsForDay(dayId) {
+  const items = plan[dayId] || [];
+  // Get the column hour cells for this day
+  const cells = document.querySelectorAll(`.cal-day-col[data-day="${dayId}"]`);
+  if (!cells.length) return;
+
+  // Make the first cell the positioning container for events
+  // Collapse the column visually: events span across cells by using absolute pos w/ top offset
+  // Simplest: append event blocks to the first hour cell with relative positioning and use top offsets
+  // Actually we'll create event blocks inside a "day stack" we inject after the first cell
+
+  // For each event in items, compute top + height
+  items.forEach((id) => {
+    const a = ACTIVITIES[id];
+    if (!a) return;
+    const start = getStart(dayId, id);
+    const duration = getDuration(dayId, id);
+    const startMin = timeToMinutes(start);
+    const calStartMin = CAL_START_HOUR * 60;
+    const top = (startMin - calStartMin) * PX_PER_MIN;
+    const height = Math.max(duration * PX_PER_MIN, 24);
+
+    if (top < 0 || top > (CAL_END_HOUR - CAL_START_HOUR) * 60) return;
+
+    // Find which hour cell this start is in
+    const startHour = Math.floor(startMin / 60);
+    const cellEl = document.querySelector(`.cal-day-col[data-day="${dayId}"][data-hour="${startHour}"]`);
+    if (!cellEl) return;
+    const minuteOffset = startMin - startHour * 60;
+
+    const evHtml = `
+      <div class="cal-event kind-${a.kind || 'activity'} ${a.locked ? 'locked' : ''}"
+           data-activity-id="${id}" data-day="${dayId}"
+           style="top:${minuteOffset}px;height:${height}px;">
+        <div class="ev-time">${formatTime(start)} — ${formatTime(endTime(start, duration))}</div>
+        <div class="ev-title">${a.title}</div>
+        ${height > 48 ? `<div class="ev-detail">${a.detail || ''}</div>` : ''}
+        ${!a.locked ? `<div class="ev-actions">
+          <button class="ev-action" data-action="back15" title="−15 min">−</button>
+          <button class="ev-action" data-action="fwd15" title="+15 min">+</button>
+          <button class="ev-action" data-action="remove" title="Remove">×</button>
+        </div>` : ''}
+      </div>
+    `;
+    cellEl.insertAdjacentHTML('beforeend', evHtml);
+  });
+
+  // Render travel block before each adults/city event going from WP
+  // (lightweight — only show travel block if previous event was kids/west or first event of day)
+  // Skipping for now to keep MVP clean — can add as future polish.
+}
+
+/* ============================================================
+   RENDER — LIST VIEW
+   ============================================================ */
+function renderListView() {
+  const grid = document.getElementById('weekGrid');
+  const days = DAYS.filter(d => visibleDays.includes(d.id));
+  grid.style.setProperty('--day-count', days.length);
+
+  let html = '';
+  for (const d of days) {
+    html += `
+      <div class="day-column">
+        <div class="day-header">
+          <div class="day-name">${d.name}</div>
+          <div class="day-date">${d.date}</div>
+          ${d.note ? `<div class="day-note">${d.note}</div>` : ''}
+        </div>
+        <div class="activity-list" id="day-${d.id}" data-day="${d.id}">
+          ${(plan[d.id] || []).map(id => renderCard(id)).join('')}
+        </div>
+      </div>
+    `;
+  }
+  // Pool
+  html += `
+    <div class="pool-column">
+      <div class="day-header">
+        <div class="day-name">Candidates</div>
+        <div class="day-date">Swap In</div>
+      </div>
+      <div class="activity-list" id="day-pool-inline" data-day="pool">
+        ${(plan.pool || []).map(id => renderCard(id)).join('')}
+      </div>
+    </div>
+  `;
+  grid.innerHTML = html;
+}
+
 function renderCard(id) {
   const a = ACTIVITIES[id];
   if (!a) return '';
   const tagsHtml = (a.tags || []).map(t => {
-    const label = {adults: 'Adults', kids: 'Kid-OK', city: 'NYC', west: 'Westchester'}[t] || t;
+    const label = {adults:'Adults',kids:'Kid-OK',city:'NYC',west:'Westchester'}[t] || t;
     return `<span class="tag ${t}">${label}</span>`;
   }).join('');
   const lockedClass = a.locked ? 'locked' : '';
   const lockedTag = a.locked ? '<span class="tag locked-tag">Locked</span>' : '';
   const bookingHtml = a.booking ? `<div class="card-booking">${a.booking}</div>` : '';
   return `
-    <div class="activity-card ${lockedClass}" data-id="${id}">
+    <div class="activity-card kind-${a.kind || 'activity'} ${lockedClass}" data-activity-id="${id}">
       <div class="card-meta">
-        <span class="card-time">${a.time}</span>
+        <span class="card-time">${formatTime(a.defaultStart)}</span>
         ${lockedTag}
         ${tagsHtml}
       </div>
       <div class="card-title">${a.title}</div>
-      <div class="card-detail">${a.detail}</div>
+      <div class="card-detail">${a.detail || ''}</div>
       ${bookingHtml}
     </div>
   `;
 }
 
-function renderPlan(plan) {
-  Object.keys(plan).forEach(day => {
-    const list = document.getElementById('day-' + day);
-    if (!list) return;
-    list.innerHTML = plan[day].map(renderCard).join('');
-  });
+/* ============================================================
+   POOL SECTION (separate, always visible regardless of view)
+   ============================================================ */
+function renderPoolSection() {
+  const list = document.getElementById('day-pool');
+  if (!list) return;
+  list.innerHTML = (plan.pool || []).map(renderCard).join('');
 }
 
-// ===== State =====
-const STORAGE_KEY = 'jack-bday-plan-v1';
-
-function loadPlan() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return DEFAULT_PLAN;
-  try {
-    const parsed = JSON.parse(raw);
-    return parsed;
-  } catch (e) {
-    return DEFAULT_PLAN;
+/* ============================================================
+   MAIN RENDER
+   ============================================================ */
+function render() {
+  // Pool always visible
+  renderPoolSection();
+  // Either calendar or list
+  if (currentView === 'calendar') {
+    document.getElementById('calendarView').style.display = '';
+    document.getElementById('listView').style.display = 'none';
+    renderCalendar();
+  } else {
+    document.getElementById('calendarView').style.display = 'none';
+    document.getElementById('listView').style.display = '';
+    renderListView();
   }
+  initInteractions();
+  updateTableAddedStates();
 }
 
-function savePlan() {
-  const plan = {};
-  document.querySelectorAll('.activity-list').forEach(list => {
-    const day = list.dataset.day;
-    plan[day] = Array.from(list.querySelectorAll('.activity-card')).map(c => c.dataset.id);
+/* ============================================================
+   INTERACTIONS
+   ============================================================ */
+function initInteractions() {
+  // Calendar event actions
+  document.querySelectorAll('.cal-event .ev-action').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const evEl = btn.closest('.cal-event');
+      const id = evEl.dataset.activityId;
+      const day = evEl.dataset.day;
+      const action = btn.dataset.action;
+      if (action === 'back15') shiftEvent(day, id, -15);
+      else if (action === 'fwd15') shiftEvent(day, id, 15);
+      else if (action === 'remove') removeFromDay(day, id);
+    });
   });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(plan));
-}
 
-function resetPlan() {
-  if (!confirm('Reset to default plan? Your current arrangement will be lost.')) return;
-  localStorage.removeItem(STORAGE_KEY);
-  renderPlan(DEFAULT_PLAN);
-  initSortables();
-}
+  // Calendar event drag — sortable per day col would clash with absolute positioning
+  // Implement custom drag-to-other-day via pointer events
+  document.querySelectorAll('.cal-event:not(.locked)').forEach(el => {
+    el.setAttribute('draggable', 'true');
+    el.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', JSON.stringify({
+        id: el.dataset.activityId,
+        fromDay: el.dataset.day
+      }));
+      el.classList.add('dragging');
+    });
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
+  });
+  document.querySelectorAll('.cal-day-col').forEach(col => {
+    col.addEventListener('dragover', e => { e.preventDefault(); });
+    col.addEventListener('drop', e => {
+      e.preventDefault();
+      try {
+        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const toDay = col.dataset.day;
+        const toHour = parseInt(col.dataset.hour);
+        if (!data.id || data.fromDay === toDay) return;
+        // Move activity from one day to another at the dropped hour
+        moveActivity(data.fromDay, toDay, data.id, toHour);
+      } catch (err) {}
+    });
+  });
 
-// ===== Sortable init =====
-function initSortables() {
+  // List view + pool — SortableJS
   document.querySelectorAll('.activity-list').forEach(list => {
+    if (list._sortableInited) return;
     new Sortable(list, {
       group: 'agenda',
       animation: 150,
       filter: '.locked',
       preventOnFilter: false,
-      onMove: function(evt) {
-        if (evt.dragged.classList.contains('locked')) return false;
-        return true;
-      },
-      onEnd: function() {
-        savePlan();
+      onMove(evt) { return !evt.dragged.classList.contains('locked'); },
+      onEnd() {
+        commitListPlan();
       }
     });
+    list._sortableInited = true;
   });
 }
 
-// ===== Boot =====
-renderPlan(loadPlan());
-initSortables();
+function commitListPlan() {
+  // Rebuild plan from list DOM
+  const newPlan = JSON.parse(JSON.stringify(plan));
+  // Clear all day arrays we manage
+  DAYS.forEach(d => newPlan[d.id] = []);
+  newPlan.pool = [];
+  document.querySelectorAll('.activity-list').forEach(list => {
+    const day = list.dataset.day;
+    const ids = Array.from(list.querySelectorAll('.activity-card')).map(c => c.dataset.activityId);
+    newPlan[day] = ids;
+  });
+  plan = newPlan;
+  saveAndPush();
+  // Also re-render to sync calendar view if visible
+  if (currentView === 'calendar') render();
+}
+
+function shiftEvent(day, id, deltaMin) {
+  const start = getStart(day, id);
+  const newStart = minutesToTime(Math.max(0, Math.min(timeToMinutes(start) + deltaMin, 23*60+45)));
+  setOverride(day, id, { ...(getOverride(day, id) || {}), start: newStart });
+  saveAndPush();
+  render();
+}
+function moveActivity(fromDay, toDay, id, dropHour) {
+  // Remove from fromDay
+  plan[fromDay] = (plan[fromDay] || []).filter(x => x !== id);
+  // Add to toDay
+  if (!plan[toDay]) plan[toDay] = [];
+  if (!plan[toDay].includes(id)) plan[toDay].push(id);
+  // Update start to dropped hour
+  if (typeof dropHour === 'number') {
+    setOverride(toDay, id, { ...(getOverride(toDay, id) || {}), start: `${String(dropHour).padStart(2,'0')}:00` });
+  }
+  saveAndPush();
+  render();
+}
+function removeFromDay(day, id) {
+  plan[day] = (plan[day] || []).filter(x => x !== id);
+  // Push back to pool
+  if (!plan.pool.includes(id)) plan.pool.push(id);
+  clearOverride(day, id);
+  saveAndPush();
+  render();
+}
+function saveAndPush() {
+  saveLocalPlan();
+  pushPlanToFirebase();
+}
+
+/* ============================================================
+   VIEW SWITCHER
+   ============================================================ */
+document.getElementById('viewSwitcher').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  const v = e.target.dataset.view;
+  if (!v || v === currentView) return;
+  currentView = v;
+  document.querySelectorAll('#viewSwitcher button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  render();
+});
+
+/* ============================================================
+   DAY FILTER
+   ============================================================ */
+document.getElementById('dayFilter').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  const range = e.target.dataset.range;
+  if (!range) return;
+  visibleDays = DAY_FILTER_PRESETS[range] || DAY_FILTER_PRESETS.all;
+  document.querySelectorAll('#dayFilter button').forEach(b => b.classList.toggle('active', b.dataset.range === range));
+  render();
+});
+
+/* ============================================================
+   TABLE: + Add to candidates
+   ============================================================ */
+document.querySelectorAll('.row-add-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetId = btn.dataset.target;
+    if (!targetId || !ACTIVITIES[targetId]) {
+      toast(`No activity defined for ${targetId}`);
+      return;
+    }
+    if (isInPlan(targetId)) {
+      removeFromAnywhere(targetId);
+      toast(`Removed ${ACTIVITIES[targetId].title}`);
+    } else {
+      if (!plan.pool.includes(targetId)) plan.pool.push(targetId);
+      toast(`Added ${ACTIVITIES[targetId].title} to Candidates`);
+    }
+    saveAndPush();
+    render();
+  });
+});
+
+function isInPlan(id) {
+  for (const day of [...DAYS.map(d=>d.id), 'pool']) {
+    if ((plan[day] || []).includes(id)) return true;
+  }
+  return false;
+}
+function removeFromAnywhere(id) {
+  for (const day of [...DAYS.map(d=>d.id), 'pool']) {
+    if (plan[day]) plan[day] = plan[day].filter(x => x !== id);
+  }
+}
+function updateTableAddedStates() {
+  document.querySelectorAll('.row-add-btn').forEach(btn => {
+    const id = btn.dataset.target;
+    if (isInPlan(id)) {
+      btn.classList.add('added');
+      btn.textContent = '✓ In plan';
+    } else {
+      btn.classList.remove('added');
+      btn.textContent = '+ Add';
+    }
+  });
+}
+
+/* ============================================================
+   RESET
+   ============================================================ */
+function resetPlan() {
+  if (!confirm('Reset to default plan? Your current arrangement and any overrides will be cleared.')) return;
+  plan = JSON.parse(JSON.stringify(DEFAULT_PLAN));
+  saveAndPush();
+  render();
+}
+
+/* ============================================================
+   STONE BARNS COUNTDOWN (until May 15, 2026)
+   ============================================================ */
+function updateCountdown() {
+  const target = new Date('2026-05-15T07:00:00-04:00'); // ~7am ET when Resy opens
+  const now = new Date();
+  const diff = target - now;
+  const el = document.getElementById('countdownClock');
+  if (diff <= 0) {
+    el.textContent = 'OPEN NOW';
+    return;
+  }
+  const days = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  el.textContent = `${days}d ${hours}h ${mins}m`;
+}
+updateCountdown();
+setInterval(updateCountdown, 60000);
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+render();
 </script>
 </body>
 </html>
