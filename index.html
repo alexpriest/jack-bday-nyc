@@ -370,7 +370,7 @@
     line-height: 1.2;
     margin-top: 2px;
   }
-  .cal-day-head .day-tag {
+  .day-tag {
     margin-top: 4px;
     display: inline-block;
     font-family: 'Helvetica Neue', sans-serif;
@@ -383,10 +383,17 @@
     color: var(--text);
     border: 1px solid var(--border);
   }
-  .cal-day-head .day-tag.adults { background: #F1E2CC; color: #7A4516; border-color: #E0CDB0; }
-  .cal-day-head .day-tag.family { background: #E2EDD0; color: #4A6B1F; border-color: #C9DCAE; }
-  .cal-day-head .day-tag.mixed { background: #DCE6F0; color: #2A4870; border-color: #BFD0E2; }
-  .cal-day-head .day-tag.locked { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft); }
+  .day-tag.adults { background: #F1E2CC; color: #7A4516; border-color: #E0CDB0; }
+  .day-tag.family { background: #E2EDD0; color: #4A6B1F; border-color: #C9DCAE; }
+  .day-tag.mixed { background: #DCE6F0; color: #2A4870; border-color: #BFD0E2; }
+  .day-tag.locked { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft); }
+  .day-note-head {
+    margin-top: 4px;
+    font-size: 10px;
+    font-style: italic;
+    color: var(--accent);
+    line-height: 1.3;
+  }
 
   /* Time gutter */
   .cal-hour-label {
@@ -1792,8 +1799,7 @@ function renderCalendar() {
   // Day headers
   for (const d of days) {
     const tagClass = d.tag === 'adults' ? 'adults' : (d.tag === 'mixed' ? 'mixed' : 'family');
-    const noteClass = d.note ? '' : '';
-    const noteHtml = d.note ? `<div class="day-tag locked" style="margin-top:4px;font-style:italic;background:transparent;border:none;color:var(--accent);padding:0;">${d.note}</div>` : '';
+    const noteHtml = d.note ? `<div class="day-note-head">${d.note}</div>` : '';
     html += `
       <div class="cal-day-head">
         <div class="day-name">${d.name}</div>
@@ -1879,15 +1885,19 @@ function renderEventsForDay(dayId) {
 function renderListView() {
   const grid = document.getElementById('weekGrid');
   const days = DAYS.filter(d => visibleDays.includes(d.id));
+  // Don't reserve pool column width — pool lives in its own section below
   grid.style.setProperty('--day-count', days.length);
+  grid.style.gridTemplateColumns = `repeat(${days.length}, 1fr)`;
 
   let html = '';
   for (const d of days) {
+    const tagClass = d.tag === 'adults' ? 'adults' : (d.tag === 'mixed' ? 'mixed' : 'family');
     html += `
       <div class="day-column">
         <div class="day-header">
           <div class="day-name">${d.name}</div>
           <div class="day-date">${d.date}</div>
+          <div class="day-tag ${tagClass}" style="display:inline-block;margin-top:4px;font-family:'Helvetica Neue',sans-serif;font-size:9px;text-transform:uppercase;letter-spacing:0.08em;padding:1px 5px;border-radius:2px;">${d.tagLabel}</div>
           ${d.note ? `<div class="day-note">${d.note}</div>` : ''}
         </div>
         <div class="activity-list" id="day-${d.id}" data-day="${d.id}">
@@ -1896,18 +1906,6 @@ function renderListView() {
       </div>
     `;
   }
-  // Pool
-  html += `
-    <div class="pool-column">
-      <div class="day-header">
-        <div class="day-name">Candidates</div>
-        <div class="day-date">Swap In</div>
-      </div>
-      <div class="activity-list" id="day-pool-inline" data-day="pool">
-        ${(plan.pool || []).map(id => renderCard(id)).join('')}
-      </div>
-    </div>
-  `;
   grid.innerHTML = html;
 }
 
@@ -2003,8 +2001,7 @@ function initInteractions() {
         const data = JSON.parse(e.dataTransfer.getData('text/plain'));
         const toDay = col.dataset.day;
         const toHour = parseInt(col.dataset.hour);
-        if (!data.id || data.fromDay === toDay) return;
-        // Move activity from one day to another at the dropped hour
+        if (!data.id) return;
         moveActivity(data.fromDay, toDay, data.id, toHour);
       } catch (err) {}
     });
@@ -2052,12 +2049,12 @@ function shiftEvent(day, id, deltaMin) {
   render();
 }
 function moveActivity(fromDay, toDay, id, dropHour) {
-  // Remove from fromDay
-  plan[fromDay] = (plan[fromDay] || []).filter(x => x !== id);
-  // Add to toDay
-  if (!plan[toDay]) plan[toDay] = [];
-  if (!plan[toDay].includes(id)) plan[toDay].push(id);
-  // Update start to dropped hour
+  if (fromDay !== toDay) {
+    plan[fromDay] = (plan[fromDay] || []).filter(x => x !== id);
+    if (!plan[toDay]) plan[toDay] = [];
+    if (!plan[toDay].includes(id)) plan[toDay].push(id);
+  }
+  // Update start to dropped hour (works for same-day time shift too)
   if (typeof dropHour === 'number') {
     setOverride(toDay, id, { ...(getOverride(toDay, id) || {}), start: `${String(dropHour).padStart(2,'0')}:00` });
   }
