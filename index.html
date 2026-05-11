@@ -423,8 +423,12 @@
         var(--border) 59px,
         var(--border) 60px
       );
+    transition: background-color 0.12s;
   }
   .cal-day-col:last-child { border-right: none; }
+  .cal-day-col.drag-target {
+    background-color: rgba(188, 82, 21, 0.06);
+  }
 
   /* Event blocks (absolute positioned in column) */
   .cal-event {
@@ -799,7 +803,7 @@
       <span><span class="legend-swatch" style="background:var(--c-kids-bg);border-color:var(--c-kids);"></span>Kid-friendly</span>
     </div>
     <p style="font-size:11px;color:var(--text-light);margin:8px 0 12px;font-style:italic;">
-      Calendar: drag events between days, or up/down within a day, to retime (snaps to 15 min). Use +/− on hover to nudge by 15 min, × to send to candidates. To pull items from the candidates pool into a specific day, switch to List view first.
+      Calendar: drag events between days, or up/down to retime (snaps to 15 min). You can also drag from the Candidates pool below directly onto any day in the calendar. Use +/− on hover to nudge by 15 min, × to send back to candidates.
     </p>
 
     <!-- CALENDAR VIEW -->
@@ -2042,9 +2046,16 @@ function initInteractions() {
     el.addEventListener('dragend', () => el.classList.remove('dragging'));
   });
   document.querySelectorAll('.cal-day-col').forEach(col => {
-    col.addEventListener('dragover', e => { e.preventDefault(); });
+    col.addEventListener('dragover', e => {
+      e.preventDefault();
+      col.classList.add('drag-target');
+    });
+    col.addEventListener('dragleave', e => {
+      col.classList.remove('drag-target');
+    });
     col.addEventListener('drop', e => {
       e.preventDefault();
+      col.classList.remove('drag-target');
       try {
         const data = JSON.parse(e.dataTransfer.getData('text/plain'));
         if (!data.id) return;
@@ -2071,6 +2082,15 @@ function initInteractions() {
       filter: '.locked',
       preventOnFilter: false,
       onMove(evt) { return !evt.dragged.classList.contains('locked'); },
+      // Bridge Sortable → native drop targets (calendar columns)
+      setData: function(dataTransfer, dragEl) {
+        const fromList = dragEl.parentElement;
+        const fromDay = fromList ? fromList.dataset.day : 'pool';
+        dataTransfer.setData('text/plain', JSON.stringify({
+          id: dragEl.dataset.activityId,
+          fromDay: fromDay
+        }));
+      },
       onEnd() {
         commitListPlan();
       }
