@@ -1977,6 +1977,17 @@ const PX_PER_MIN = 1;
 // Live drag state — populated on dragstart, consumed by the drop indicator
 let dragState = null;
 
+// Hidden 1px element used to suppress the browser's default drag image.
+// Our custom ghost is clearer; the browser's translucent preview just overlaps the chip.
+let _emptyDragImg = null;
+function getEmptyDragImg() {
+  if (_emptyDragImg) return _emptyDragImg;
+  _emptyDragImg = document.createElement('div');
+  _emptyDragImg.style.cssText = 'position:fixed;top:-1000px;left:-1000px;width:1px;height:1px;pointer-events:none;';
+  document.body.appendChild(_emptyDragImg);
+  return _emptyDragImg;
+}
+
 // Snap a column-local Y coordinate to the nearest 15-min slot, return { snappedMin, top, timeStr }
 function snapDropPosition(yPx) {
   const totalMins = CAL_START_HOUR * 60 + Math.round(yPx / PX_PER_MIN);
@@ -2258,10 +2269,15 @@ function initInteractions() {
         id: el.dataset.activityId,
         fromDay: el.dataset.day
       }));
+      // Suppress browser's translucent drag preview — our ghost is the indicator
+      try { e.dataTransfer.setDragImage(getEmptyDragImg(), 0, 0); } catch (_) {}
       dragState = {
         id: el.dataset.activityId,
         fromDay: el.dataset.day,
-        height: el.offsetHeight
+        height: el.offsetHeight,
+        // Y offset within the event where the user grabbed — keeps the ghost
+        // anchored under the cursor at the right relative spot
+        grabOffsetY: typeof e.offsetY === 'number' ? e.offsetY : 0
       };
       el.classList.add('dragging');
     });
@@ -2275,9 +2291,12 @@ function initInteractions() {
     col.addEventListener('dragover', e => {
       e.preventDefault();
       col.classList.add('drag-target');
-      // Render the live drop indicator at the snapped slot
+      // Render the live drop indicator at the snapped slot.
+      // Subtract grabOffsetY so the ghost anchors to where the cursor sits
+      // within the event (not always the top edge).
       const rect = col.getBoundingClientRect();
-      const y = Math.max(0, e.clientY - rect.top);
+      const grabOffsetY = (dragState && dragState.grabOffsetY) || 0;
+      const y = Math.max(0, e.clientY - rect.top - grabOffsetY);
       const { top, timeStr } = snapDropPosition(y);
       const height = (dragState && dragState.height) || 60;
       const maxTop = (CAL_END_HOUR - CAL_START_HOUR) * 60 * PX_PER_MIN;
@@ -2305,7 +2324,8 @@ function initInteractions() {
         if (!data.id) return;
         const toDay = col.dataset.day;
         const rect = col.getBoundingClientRect();
-        const y = Math.max(0, e.clientY - rect.top);
+        const grabOffsetY = (dragState && dragState.grabOffsetY) || 0;
+        const y = Math.max(0, e.clientY - rect.top - grabOffsetY);
         const { timeStr } = snapDropPosition(y);
         moveActivityToTime(data.fromDay, toDay, data.id, timeStr);
       } catch (err) { console.warn(err); }
@@ -2341,6 +2361,8 @@ function initInteractions() {
           id: dragEl.dataset.activityId,
           fromDay: fromDay
         }));
+        // Suppress browser's translucent drag preview
+        try { dataTransfer.setDragImage(getEmptyDragImg(), 0, 0); } catch (_) {}
       },
       onStart(evt) {
         // Populate dragState so the calendar drop indicator can size correctly
@@ -2348,10 +2370,18 @@ function initInteractions() {
         const fromList = evt.from;
         const fromDay = (fromList && fromList.dataset.day) || 'pool';
         const dur = getDuration(fromDay, id);
+        // Compute where within the card the user grabbed
+        let grabOffsetY = 0;
+        const oe = evt.originalEvent;
+        if (oe && typeof oe.clientY === 'number') {
+          const r = evt.item.getBoundingClientRect();
+          grabOffsetY = Math.max(0, Math.min(oe.clientY - r.top, r.height));
+        }
         dragState = {
           id,
           fromDay,
-          height: Math.max(dur * PX_PER_MIN, 22)
+          height: Math.max(dur * PX_PER_MIN, 22),
+          grabOffsetY
         };
       },
       onEnd() {
