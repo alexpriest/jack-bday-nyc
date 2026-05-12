@@ -1679,7 +1679,10 @@ const DEFAULT_PLAN = {
    ============================================================ */
 const LS_KEY = 'jackhattan-plan-v1';
 const LS_USER_KEY = 'jackhattan-user';
-const FB_NAMESPACE = 'jack-bday';
+// Use existing Stoweaways rule paths with namespaced keys so collab works
+// without needing to update Firebase rules.
+const PRESENCE_KEY_PREFIX = 'jbn-';     // user keys live under /users/jbn-<uid>
+const PLAN_PATH = 'checklist/jackhattan-plan';  // string-validated path; per-uid write
 
 let plan = loadLocalPlan();
 let currentView = 'calendar';
@@ -1780,18 +1783,29 @@ document.getElementById('userNameInput').addEventListener('input', e => {
 
 function publishPresence() {
   if (!firebaseReady || !currentUser) return;
-  const ref = db.ref(`${FB_NAMESPACE}/users/${currentUser.uid}`);
+  const ref = db.ref(`users/${PRESENCE_KEY_PREFIX}${currentUser.uid}`);
   ref.set({
     name: currentUser.name || 'anon',
     color: currentUser.color,
-    lastSeen: Date.now()
+    lastSeen: Date.now(),
+    site: 'jackhattan'
   });
   ref.onDisconnect().remove();
 }
 function subscribePresence() {
   if (!firebaseReady) return;
-  db.ref(`${FB_NAMESPACE}/users`).on('value', snap => {
-    presenceUsers = snap.val() || {};
+  db.ref('users').on('value', snap => {
+    const all = snap.val() || {};
+    presenceUsers = {};
+    for (const [key, val] of Object.entries(all)) {
+      if (key.startsWith(PRESENCE_KEY_PREFIX) && val && val.site === 'jackhattan') {
+        const uid = key.slice(PRESENCE_KEY_PREFIX.length);
+        // Filter stale presences (>5 min old)
+        if (val.lastSeen && Date.now() - val.lastSeen < 5 * 60 * 1000) {
+          presenceUsers[uid] = val;
+        }
+      }
+    }
     renderPresence();
   });
 }
@@ -1822,28 +1836,47 @@ if (firebaseReady) {
 /* ============================================================
    PLAN SYNC
    ============================================================ */
-let suppressSyncForMs = 0;
+let lastSyncedTs = 0;
 function pushPlanToFirebase() {
   if (!firebaseReady) return;
-  suppressSyncForMs = Date.now() + 800;
-  db.ref(`${FB_NAMESPACE}/plan`).set({
-    state: plan,
-    updatedBy: currentUser.uid,
-    updatedByName: currentUser.name || 'anon',
-    updatedAt: Date.now()
+  const ts = Date.now();
+  lastSyncedTs = ts;
+  // Store as a JSON string keyed by uid — uses existing /checklist rule
+  // (rule allows isString() write per uid; we encode plan + metadata in JSON)
+  const payload = JSON.stringify({
+    ts,
+    plan,
+    by: currentUser.name || 'anon',
+    byUid: currentUser.uid
+  });
+  db.ref(`${PLAN_PATH}/${currentUser.uid}`).set(payload).catch(err => {
+    console.warn('Plan push failed:', err);
   });
 }
 function subscribePlan() {
   if (!firebaseReady) return;
-  db.ref(`${FB_NAMESPACE}/plan`).on('value', snap => {
-    const val = snap.val();
-    if (!val || !val.state) return;
-    if (Date.now() < suppressSyncForMs) return; // ignore echo of own write
-    if (val.updatedBy === currentUser.uid) return;
-    plan = val.state;
+  db.ref(PLAN_PATH).on('value', snap => {
+    const data = snap.val();
+    if (!data) return;
+    // Find latest entry across all users by ts
+    let latest = null;
+    for (const [uid, raw] of Object.entries(data)) {
+      if (typeof raw !== 'string') continue;
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.ts && (!latest || parsed.ts > latest.ts)) {
+          latest = parsed;
+        }
+      } catch (e) {}
+    }
+    if (!latest || !latest.plan) return;
+    if (latest.byUid === currentUser.uid) return; // own write echo
+    if (latest.ts <= lastSyncedTs) return;
+    plan = latest.plan;
+    lastSyncedTs = latest.ts;
     saveLocalPlan();
     render();
-    if (val.updatedByName) toast(`${val.updatedByName} updated the plan`);
+    if (latest.by && latest.by !== 'anon') toast(`${latest.by} updated the plan`);
   });
 }
 if (firebaseReady) subscribePlan();

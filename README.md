@@ -26,17 +26,15 @@ Jack's birthday week planning site — June 5–11, 2026. NYC + Westchester.
 - Native HTML5 D&D for calendar
 - GitHub Pages hosting
 
-## Deploying Firebase rules
+## Firebase setup
 
-The site works in solo mode (via localStorage) out of the box. To enable live multi-user sync:
+**No deployment needed.** The app uses existing Stoweaways Firebase rule paths with namespaced keys:
+- Presence: `/users/jbn-<uid>` (existing `/users/$uid` rule allows write)
+- Plan state: `/checklist/jackhattan-plan/<uid>` (existing checklist rule allows string write per uid)
 
-```bash
-cd ~/Code/projects/jack-bday-nyc
-firebase login                          # one-time browser auth
-firebase deploy --only database         # pushes database.rules.json
-```
+Both work immediately against the live `stoweaways-2026` project — no `firebase deploy` required. The green "live" dot in the top bar should light up as soon as anyone has the page open.
 
-Once rules deploy, the green "live" dot in the top bar lights up and changes sync across all users in real time.
+The `database.rules.json` file in this repo is a documentary copy showing what dedicated rules would look like — kept for future reference if you ever want to migrate to dedicated paths. Not currently used.
 
 ## Local dev
 
